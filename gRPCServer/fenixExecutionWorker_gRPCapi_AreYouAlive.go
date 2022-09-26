@@ -35,8 +35,25 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ReportProcessingCapability(ctx 
 		"id": "f3fd3e50-5770-48ad-8524-85f34d28545e",
 	}).Debug("Outgoing 'gRPCServer - ReportProcessingCapability'")
 
-	return &fenixExecutionWorkerGrpcApi.AckNackResponse{AckNack: true, Comments: "I'am alive."}, nil
+	// Calling system
+	userId := "Execution Server"
 
+	// Check if Client is using correct proto files version
+	returnMessage := common_config.IsClientUsingCorrectTestDataProtoFileVersion(userId, fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(emptyParameter.ProtoFileVersionUsedByClient))
+	if returnMessage != nil {
+
+		// Exiting
+		return returnMessage, nil
+	}
+
+	returnMessage = &fenixExecutionWorkerGrpcApi.AckNackResponse{
+		AckNack:                      true,
+		Comments:                     "",
+		ErrorCodes:                   nil,
+		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(common_config.GetHighestFenixTestDataProtoFileVersion()),
+	}
+
+	return returnMessage, nil
 }
 
 // ProcessTestInstructionExecution
@@ -45,12 +62,13 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 	s.logger.WithFields(logrus.Fields{
 		"id": "37bc2356-33a2-4e2c-9420-122df581d757",
-	}).Debug("Incoming 'gRPCServer - ReportProcessingCapability'")
+	}).Debug("Incoming 'gRPCServer - ProcessTestInstructionExecution'")
 
 	defer s.logger.WithFields(logrus.Fields{
 		"id": "f3fd3e50-5770-48ad-8524-85f34d28545e",
-	}).Debug("Outgoing 'gRPCServer - ReportProcessingCapability'")
+	}).Debug("Outgoing 'gRPCServer - ProcessTestInstructionExecution'")
 
+	// Calling system
 	userId := "Execution Server"
 
 	// Check if Client is using correct proto files version
