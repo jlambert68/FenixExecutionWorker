@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Exctract Values, and create, for TestDataHeaderItemMessageHash
+// CreateTestDataHeaderItemMessageHash - Exctract Values, and create, for TestDataHeaderItemMessageHash
 func CreateTestDataHeaderItemMessageHash(testDataHeaderItemMessage *fenixTestDataSyncServerGrpcApi.TestDataHeaderItemMessage) (testDataHeaderItemMessageHash string) {
 
 	var valuesToHash []string
@@ -50,7 +50,7 @@ func CreateTestDataHeaderItemMessageHash(testDataHeaderItemMessage *fenixTestDat
 	return testDataHeaderItemMessageHash
 }
 
-// Hash a single value
+// HashSingleValue HashSingleValue Hash a single value
 func HashSingleValue(valueToHash string) (hashValue string) {
 
 	hash := sha256.New()
@@ -94,7 +94,7 @@ func ConvertGrpcTimeStampToStringForDB(grpcTimeStamp *timestamppb.Timestamp) (gr
 	return grpcTimeStampAsTimeStampAsString
 }
 
-// ********************************************************************************************************************
+// IsClientUsingCorrectTestDataProtoFileVersion ********************************************************************************************************************
 // Check if Calling Client is using correct proto-file version
 func IsClientUsingCorrectTestDataProtoFileVersion(callingClientUuid string, usedProtoFileVersion fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum) (returnMessage *fenixExecutionWorkerGrpcApi.AckNackResponse) {
 
