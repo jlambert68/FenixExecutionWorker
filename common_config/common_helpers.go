@@ -83,7 +83,7 @@ func GenerateDatetimeFromTimeInputForDB(currentTime time.Time) (currentTimeStamp
 }
 
 // ConvertGrpcTimeStampToStringForDB
-// Convert a gRPC-timestamp into a string that can be used to store in the database
+// Convert a gRPCServer-timestamp into a string that can be used to store in the database
 func ConvertGrpcTimeStampToStringForDB(grpcTimeStamp *timestamppb.Timestamp) (grpcTimeStampAsTimeStampAsString string) {
 	grpcTimeStampAsTimeStamp := grpcTimeStamp.AsTime()
 
