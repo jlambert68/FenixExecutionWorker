@@ -7,8 +7,8 @@ package common_config
 var ExecutionLocationForClient ExecutionLocationTypeType
 
 // Where is the Fenix TestDataSync server running
-// LocationForFenixExecutionServer
-var ExecutionLocationForFenixExecutionServer ExecutionLocationTypeType
+// LocationForFenixExecutionWorker
+var ExecutionLocationForFenixExecutionWorker ExecutionLocationTypeType
 
 // Definitions for where client and Fenix Server is running
 type ExecutionLocationTypeType int

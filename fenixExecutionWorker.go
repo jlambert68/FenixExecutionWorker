@@ -1,7 +1,7 @@
 package main
 
 import (
-	"FenixExecutionServer/testInstructionExecutionEngine"
+	"FenixExecutionWorker/testInstructionExecutionEngine"
 	fenixSyncShared "github.com/jlambert68/FenixSyncShared"
 	"github.com/sirupsen/logrus"
 )
@@ -16,23 +16,23 @@ func cleanup() {
 		cleanupProcessed = true
 
 		// Cleanup before close down application
-		fenixExecutionServerObject.logger.WithFields(logrus.Fields{}).Info("Clean up and shut down servers")
+		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{}).Info("Clean up and shut down servers")
 
 		// Stop Backend gRPC Server
-		fenixExecutionServerObject.StopGrpcServer()
+		fenixExecutionWorkerObject.StopGrpcServer()
 
 		//log.Println("Close DB_session: %v", DB_session)
 		//DB_session.Close()
 	}
 }
 
-func fenixExecutionServerMain() {
+func fenixExecutionWorkerMain() {
 
 	// Connect to CloudDB
 	fenixSyncShared.ConnectToDB()
 
 	// Set up BackendObject
-	fenixExecutionServerObject = &fenixExecutionServerObjectStruct{
+	fenixExecutionWorkerObject = &fenixExecutionWorkerObjectStruct{
 		logger:                    nil,
 		gcpAccessToken:            nil,
 		executionEngineChannelRef: nil,
@@ -40,7 +40,7 @@ func fenixExecutionServerMain() {
 	}
 
 	// Init logger
-	fenixExecutionServerObject.InitLogger("")
+	fenixExecutionWorkerObject.InitLogger("")
 
 	// Clean up when leaving. Is placed after logger because shutdown logs information
 	defer cleanup()
@@ -48,15 +48,15 @@ func fenixExecutionServerMain() {
 	// Create Channel used for sending Commands to TestInstructionExecutionCommandsEngine
 	testInstructionExecutionEngine.ExecutionEngineCommandChannel = make(chan testInstructionExecutionEngine.ChannelCommandStruct)
 	myCommandChannelRef := &testInstructionExecutionEngine.ExecutionEngineCommandChannel
-	fenixExecutionServerObject.executionEngineChannelRef = myCommandChannelRef
+	fenixExecutionWorkerObject.executionEngineChannelRef = myCommandChannelRef
 
 	// Initiate logger in TestInstructionEngine
-	fenixExecutionServerObject.executionEngine.SetLogger(fenixExecutionServerObject.logger)
+	fenixExecutionWorkerObject.executionEngine.SetLogger(fenixExecutionWorkerObject.logger)
 
 	// Start Receiver channel for Commands
-	fenixExecutionServerObject.executionEngine.InitiateTestInstructionExecutionEngineCommandChannelReader(*myCommandChannelRef)
+	fenixExecutionWorkerObject.executionEngine.InitiateTestInstructionExecutionEngineCommandChannelReader(*myCommandChannelRef)
 
 	// Start Backend gRPC-server
-	fenixExecutionServerObject.InitGrpcServer()
+	fenixExecutionWorkerObject.InitGrpcServer()
 
 }

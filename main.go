@@ -1,7 +1,7 @@
 package main
 
 import (
-	"FenixExecutionServer/common_config"
+	"FenixExecutionWorker/common_config"
 	"strconv"
 
 	//"flag"
@@ -22,7 +22,7 @@ func mustGetenv(k string) string {
 
 func main() {
 	//time.Sleep(15 * time.Second)
-	fenixExecutionServerMain()
+	fenixExecutionWorkerMain()
 }
 
 func init() {

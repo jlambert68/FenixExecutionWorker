@@ -1,15 +1,15 @@
 package main
 
 import (
-	"FenixExecutionServer/common_config"
+	"FenixExecutionWorker/common_config"
 	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 	"time"
 )
 
-func (fenixExecutionServerObject *fenixExecutionServerObjectStruct) InitLogger(filename string) {
-	fenixExecutionServerObject.logger = logrus.StandardLogger()
+func (fenixExecutionWorkerObject *fenixExecutionWorkerObjectStruct) InitLogger(filename string) {
+	fenixExecutionWorkerObject.logger = logrus.StandardLogger()
 
 	switch common_config.LoggingLevel {
 
@@ -39,12 +39,12 @@ func (fenixExecutionServerObject *fenixExecutionServerObjectStruct) InitLogger(f
 	//If no file then set standard out
 
 	if filename == "" {
-		fenixExecutionServerObject.logger.Out = os.Stdout
+		fenixExecutionWorkerObject.logger.Out = os.Stdout
 
 	} else {
 		file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
 		if err == nil {
-			fenixExecutionServerObject.logger.Out = file
+			fenixExecutionWorkerObject.logger.Out = file
 		} else {
 			log.Println("Failed to log to file, using default stderr")
 		}

@@ -2,7 +2,7 @@ package common_config
 
 import (
 	"fmt"
-	fenixExecutionServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionServerGrpcApi/go_grpc_api"
+	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"time"
@@ -48,8 +48,8 @@ func GenerateSQLInsertValues(testdata [][]interface{}) (sqlInsertValuesString st
 
 				sqlInsertValuesString = sqlInsertValuesString + "'" + fmt.Sprint(valueAsString) + "'"
 
-			case fenixExecutionServerGrpcApi.ExecutionPriorityEnum:
-				valueAsNumber := value.(fenixExecutionServerGrpcApi.ExecutionPriorityEnum).Number()
+			case fenixExecutionWorkerGrpcApi.ExecutionPriorityEnum:
+				valueAsNumber := value.(fenixExecutionWorkerGrpcApi.ExecutionPriorityEnum).Number()
 				sqlInsertValuesString = sqlInsertValuesString + fmt.Sprint(valueAsNumber)
 
 			default:

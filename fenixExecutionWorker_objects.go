@@ -1,15 +1,15 @@
 package main
 
 import (
-	"FenixExecutionServer/testInstructionExecutionEngine"
-	fenixExecutionServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionServerGrpcApi/go_grpc_api"
+	"FenixExecutionWorker/testInstructionExecutionEngine"
+	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"net"
 )
 
-type fenixExecutionServerObjectStruct struct {
+type fenixExecutionWorkerObjectStruct struct {
 	logger                    *logrus.Logger
 	gcpAccessToken            *oauth2.Token
 	executionEngineChannelRef *testInstructionExecutionEngine.ExecutionEngineChannelType
@@ -17,17 +17,17 @@ type fenixExecutionServerObjectStruct struct {
 }
 
 // Variable holding everything together
-var fenixExecutionServerObject *fenixExecutionServerObjectStruct
+var fenixExecutionWorkerObject *fenixExecutionWorkerObjectStruct
 
 // gRPC variables
 var (
-	registerFenixExecutionServerGrpcServicesServer *grpc.Server
+	registerFenixExecutionWorkerGrpcServicesServer *grpc.Server
 	lis                                            net.Listener
 )
 
 // gRPC Server used for register clients Name, Ip and Por and Clients Test Enviroments and Clients Test Commandst
-type fenixExecutionServerGrpcServicesServer struct {
-	fenixExecutionServerGrpcApi.UnimplementedFenixExecutionServerGrpcServicesServer
+type fenixExecutionWorkerGrpcServicesServer struct {
+	fenixExecutionWorkerGrpcApi.UnimplementedFenixExecutionWorkerGrpcServicesServer
 }
 
 //TODO FIXA DENNA PATH, HMMM borde köra i DB framöver

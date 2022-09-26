@@ -37,7 +37,7 @@ func (executionEngine *TestInstructionExecutionEngineStruct) startCommandChannel
 func (executionEngine *TestInstructionExecutionEngineStruct) initiateExecutionsForTestInstructionsOnExecutionQueue() {
 
 	fmt.Println("initiateExecutionsForTestInstructionsOnExecutionQueue")
-	executionEngine.prepareInitiateExecutionsForTestInstructionsOnExecutionQueueSaveToCloudDB()
+
 }
 
 // Check ongoing executions  for TestInstructions for change in status that should be propagated to other places
