@@ -14,5 +14,3 @@ type fenixExecutionWorkerObjectStruct struct {
 
 // Variable holding everything together
 var FenixExecutionWorkerObject *fenixExecutionWorkerObjectStruct
-
-var Apa string
