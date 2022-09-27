@@ -6,6 +6,8 @@ import (
 	fenixTestDataSyncServerGrpcApi "github.com/jlambert68/FenixGrpcApi/Fenix/fenixTestDataSyncServerGrpcApi/go_grpc_api"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"sort"
+	"strconv"
 	"time"
 )
 
@@ -48,6 +50,36 @@ func CreateTestDataHeaderItemMessageHash(testDataHeaderItemMessage *fenixTestDat
 	testDataHeaderItemMessageHash = HashValues(valuesToHash, true)
 
 	return testDataHeaderItemMessageHash
+}
+
+func HashValues(valuesToHash []string, isNonHashValue bool) string {
+
+	hash_string := ""
+	sha256_hash := ""
+
+	// Concatenate array position to its content if it is a 'NonHashValue'
+	if isNonHashValue == true {
+		for valuePosition, value := range valuesToHash {
+			valuesToHash[valuePosition] = value + strconv.Itoa(valuePosition)
+		}
+	}
+
+	// Always sort values before hash them
+	sort.Strings(valuesToHash)
+
+	//Hash all values
+	for _, valueToHash := range valuesToHash {
+		hash_string = hash_string + valueToHash
+
+		hash := sha256.New()
+		hash.Write([]byte(hash_string))
+		sha256_hash = hex.EncodeToString(hash.Sum(nil))
+		hash_string = sha256_hash
+
+	}
+
+	return sha256_hash
+
 }
 
 // HashSingleValue HashSingleValue Hash a single value
