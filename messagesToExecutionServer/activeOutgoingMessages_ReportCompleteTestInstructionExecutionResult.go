@@ -9,7 +9,7 @@ import (
 )
 
 // SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer - When a TestInstruction has been fully executed the Client use this to inform the results of the execution result to the Server
-func (fenixExecutionWorkerObject *messagesToExecutionServerObjectStruct) SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(finalTestInstructionExecutionResultMessage *fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage) (bool, string) {
+func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(finalTestInstructionExecutionResultMessage *fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage) (bool, string) {
 
 	var ctx context.Context
 	var returnMessageAckNack bool

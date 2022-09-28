@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type messagesToExecutionServerObjectStruct struct {
+type MessagesToExecutionServerObjectStruct struct {
 	logger         *logrus.Logger
 	gcpAccessToken *oauth2.Token
 }

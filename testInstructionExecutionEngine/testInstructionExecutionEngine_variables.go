@@ -1,13 +1,18 @@
 package testInstructionExecutionEngine
 
-import "github.com/sirupsen/logrus"
+import (
+	"FenixExecutionWorker/messagesToExecutionServer"
+	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
+	"github.com/sirupsen/logrus"
+)
 
 type TestInstructionExecutionEngineStruct struct {
-	logger                  *logrus.Logger
-	CommandChannelReference *ExecutionEngineChannelType
+	logger                                   *logrus.Logger
+	CommandChannelReference                  *ExecutionEngineChannelType
+	messagesToExecutionServerObjectReference *messagesToExecutionServer.MessagesToExecutionServerObjectStruct
 }
 
-// Parameters used for channel to trigger TestInstructionExecutionEngine
+// ExecutionEngineCommandChannel
 var ExecutionEngineCommandChannel ExecutionEngineChannelType
 
 type ExecutionEngineChannelType chan ChannelCommandStruct
@@ -15,10 +20,18 @@ type ExecutionEngineChannelType chan ChannelCommandStruct
 type ChannelCommandType uint8
 
 const (
-	ChannelCommandCheckTestInstructionExecutionQueue ChannelCommandType = iota
-	ChannelCommandCheckOngoingTestInstructionExecutions
+	ChannelCommandSendAreYouAliveToFenixExecutionServer ChannelCommandType = iota
+	ChannelCommandSendReportProcessingCapabilityToFenixExecutionServer
+	ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServer
 )
 
 type ChannelCommandStruct struct {
-	ChannelCommand ChannelCommandType
+	ChannelCommand                                        ChannelCommandType
+	ReportCompleteTestInstructionExecutionResultParameter ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct
+}
+
+// ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct
+// Parameter used when to forward the final execution result for a TestInstruction
+type ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct struct {
+	finalTestInstructionExecutionResultMessage *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage
 }

@@ -9,7 +9,7 @@ import (
 )
 
 // SendReportProcessingCapabilityToFenixExecutionServer - Worker send the execution capabilities regrading parallell executions
-func (fenixExecutionWorkerObject *messagesToExecutionServerObjectStruct) SendReportProcessingCapabilityToFenixExecutionServer(processingCapabilityMessage *fenixExecutionServerGrpcApi.ProcessingCapabilityMessage) (bool, string) {
+func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendReportProcessingCapabilityToFenixExecutionServer(processingCapabilityMessage *fenixExecutionServerGrpcApi.ProcessingCapabilityMessage) (bool, string) {
 
 	var ctx context.Context
 	var returnMessageAckNack bool

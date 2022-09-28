@@ -9,7 +9,7 @@ import (
 )
 
 // SendAreYouAliveToFenixExecutionServer - Ask Fenix Execution Server to check if it's up and running
-func (fenixExecutionWorkerObject *messagesToExecutionServerObjectStruct) SendAreYouAliveToFenixExecutionServer() (bool, string) {
+func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendAreYouAliveToFenixExecutionServer() (bool, string) {
 
 	var ctx context.Context
 	var returnMessageAckNack bool
