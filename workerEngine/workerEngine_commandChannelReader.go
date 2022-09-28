@@ -1,4 +1,4 @@
-package testInstructionExecutionEngine
+package workerEngine
 
 import (
 	"fmt"
@@ -19,14 +19,14 @@ func (executionEngine *TestInstructionExecutionEngineStruct) startCommandChannel
 		switch incomingChannelCommand.ChannelCommand {
 
 		case ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServer:
-			executionEngine.initiateExecutionsForTestInstructionsOnExecutionQueue(in)
+			executionEngine.SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(incomingChannelCommand)
 
 		// No other command is supported
 		default:
 			executionEngine.logger.WithFields(logrus.Fields{
 				"Id":                     "6bf37452-da99-4e7e-aa6a-4627b05d1bdb",
 				"incomingChannelCommand": incomingChannelCommand,
-			}).Fatalln("Unknown command in CommandChannel for TestInstructionEngine")
+			}).Fatalln("Unknown command in CommandChannel for Worker Engine")
 		}
 	}
 
@@ -44,12 +44,13 @@ func (executionEngine *TestInstructionExecutionEngineStruct) checkOngoingExecuti
 
 }
 
-// Check ongoing executions  for TestInstructions for change in status that should be propagated to other places
+// SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer
+// Forward the final result of a TestInstructionExecution done by domains own execution engine
 func (executionEngine *TestInstructionExecutionEngineStruct) SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(channelCommand ChannelCommandStruct) {
 	var finalTestInstructionExecutionResultMessageFromExecutionWorker *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage
 	var finalTestInstructionExecutionResultMessageToExecutionServer *fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage
 
-	// Extract message in Worker-message-structure-type
+	// Convert message into Worker-message-structure-type
 	finalTestInstructionExecutionResultMessageFromExecutionWorker = channelCommand.ReportCompleteTestInstructionExecutionResultParameter.finalTestInstructionExecutionResultMessage
 
 	// Convert from Worker-message into ExecutionServer-message

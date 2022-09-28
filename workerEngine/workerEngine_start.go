@@ -1,4 +1,4 @@
-package testInstructionExecutionEngine
+package workerEngine
 
 import "github.com/sirupsen/logrus"
 

@@ -5,7 +5,7 @@ import (
 	"context"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
-	"FenixExecutionWorker/testInstructionExecutionEngine"
+	"FenixExecutionWorker/workerEngine"
 )
 
 // ConnectorReportCompleteTestInstructionExecutionResult
@@ -31,9 +31,9 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ConnectorReportCompleteTestInst
 	}
 
 	// Send Message on CommandChannel to be able to send Result back to Fenix Execution Server
-	channelCommand :=  testInstructionExecutionEngine.ChannelCommandStruct{
-		ChannelCommand: testInstructionExecutionEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServer,
-		ReportCompleteTestInstructionExecutionResultParameter: testInstructionExecutionEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct{	finalTestInstructionExecutionResultMessageReference *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage
+	channelCommand :=  workerEngine.ChannelCommandStruct{
+		ChannelCommand: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServer,
+		ReportCompleteTestInstructionExecutionResultParameter: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct{finalTestInstructionExecutionResultMessageReference *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage
 		: finalTestInstructionExecutionResultMessage},
 	}
 
