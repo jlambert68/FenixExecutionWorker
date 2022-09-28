@@ -6,6 +6,9 @@ package common_config
 // Where is the Worker running
 var ExecutionLocationForWorker ExecutionLocationTypeType
 
+// Where is Fenix Execution Server running
+var ExecutionLocationForFenixExecutionServer ExecutionLocationTypeType
+
 // Definitions for where client and Fenix Server is running
 type ExecutionLocationTypeType int
 

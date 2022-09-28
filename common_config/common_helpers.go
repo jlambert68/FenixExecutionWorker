@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	fenixTestDataSyncServerGrpcApi "github.com/jlambert68/FenixGrpcApi/Fenix/fenixTestDataSyncServerGrpcApi/go_grpc_api"
-	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
 	"strconv"
@@ -126,51 +125,7 @@ func ConvertGrpcTimeStampToStringForDB(grpcTimeStamp *timestamppb.Timestamp) (gr
 	return grpcTimeStampAsTimeStampAsString
 }
 
-// IsClientUsingCorrectTestDataProtoFileVersion ********************************************************************************************************************
-// Check if Calling Client is using correct proto-file version
-func IsClientUsingCorrectTestDataProtoFileVersion(callingClientUuid string, usedProtoFileVersion fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum) (returnMessage *fenixExecutionWorkerGrpcApi.AckNackResponse) {
-
-	var clientUseCorrectProtoFileVersion bool
-	var protoFileExpected fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum
-	var protoFileUsed fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum
-
-	protoFileUsed = usedProtoFileVersion
-	protoFileExpected = fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(GetHighestFenixTestDataProtoFileVersion())
-
-	// Check if correct proto files is used
-	if protoFileExpected == protoFileUsed {
-		clientUseCorrectProtoFileVersion = true
-	} else {
-		clientUseCorrectProtoFileVersion = false
-	}
-
-	// Check if Client is using correct proto files version
-	if clientUseCorrectProtoFileVersion == false {
-		// Not correct proto-file version is used
-
-		// Set Error codes to return message
-		var errorCodes []fenixExecutionWorkerGrpcApi.ErrorCodesEnum
-		var errorCode fenixExecutionWorkerGrpcApi.ErrorCodesEnum
-
-		errorCode = fenixExecutionWorkerGrpcApi.ErrorCodesEnum_ERROR_WRONG_PROTO_FILE_VERSION
-		errorCodes = append(errorCodes, errorCode)
-
-		// Create Return message
-		returnMessage = &fenixExecutionWorkerGrpcApi.AckNackResponse{
-			AckNack:                      false,
-			Comments:                     "Wrong proto file used. Expected: '" + protoFileExpected.String() + "', but got: '" + protoFileUsed.String() + "'",
-			ErrorCodes:                   errorCodes,
-			ProtoFileVersionUsedByClient: protoFileExpected,
-		}
-
-		return returnMessage
-
-	} else {
-		return nil
-	}
-
-}
-
+/*
 // ********************************************************************************************************************
 // Get the highest FenixProtoFileVersionEnumeration
 func GetHighestFenixTestDataProtoFileVersion() int32 {
@@ -194,3 +149,5 @@ func GetHighestFenixTestDataProtoFileVersion() int32 {
 
 	return highestFenixProtoFileVersion
 }
+
+*/

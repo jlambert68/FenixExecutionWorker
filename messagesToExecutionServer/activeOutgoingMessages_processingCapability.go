@@ -2,25 +2,29 @@ package messagesToExecutionServer
 
 import (
 	"FenixExecutionWorker/common_config"
-	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
+	"context"
+	fenixExecutionServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionServerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"time"
 )
 
-// SendAreYouAliveToFenixTestDataServer - Send the client's TestDataHeaders to Fenix by calling Fenix's gPRC server
-func (fenixExecutionWorkerObject *fenixExecutionWorkerObject_struct) SendAreYouAliveToFenixTestDataServer() (bool, string) {
+// SendAreYouAliveToFenixExecutionServer - Send the client's TestDataHeaders to Fenix by calling Fenix's gPRC server
+func (fenixExecutionWorkerObject *messagesToExecutionServerObjectStruct) SendAreYouAliveToFenixExecutionServer() (bool, string) {
 
 	var ctx context.Context
 	var returnMessageAckNack bool
 	var returnMessageString string
 
 	// Set up connection to Server
-	fenixExecutionWorkerObject.SetConnectionToFenixTestDataSyncServer()
+	err := fenixExecutionWorkerObject.SetConnectionToFenixTestExecutionServer()
+	if err != nil {
+		return false, err.Error()
+	}
 
 	// Create the message with all test data to be sent to Fenix
-	emptyParameter := &fenixExecutionWorkerGrpcApi.EmptyParameter{
+	emptyParameter := &fenixExecutionServerGrpcApi.EmptyParameter{
 
-		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixTestDataProtoFileVersionEnum(fenixExecutionWorkerObject.getHighestFenixProtoFileVersion()),
+		ProtoFileVersionUsedByClient: fenixExecutionServerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(common_config.GetHighestFenixExecutionServerProtoFileVersion()),
 	}
 
 	// Do gRPC-call
@@ -34,7 +38,7 @@ func (fenixExecutionWorkerObject *fenixExecutionWorkerObject_struct) SendAreYouA
 	}()
 
 	// Only add access token when run on GCP
-	if common_config.ExecutionLocationForFenixTestDataServer == common_config.GCP {
+	if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
 
 		// Add Access token
 		ctx, returnMessageAckNack, returnMessageString = fenixExecutionWorkerObject.generateGCPAccessToken(ctx)
@@ -44,21 +48,25 @@ func (fenixExecutionWorkerObject *fenixExecutionWorkerObject_struct) SendAreYouA
 
 	}
 
-	returnMessage, err := fenixGuiTestCaseBuilderServerClient.AreYouAlive(ctx, emptyParameter)
+	returnMessage, err := fenixExecutionServerGrpcClient.AreYouAlive(ctx, emptyParameter)
 
 	// Shouldn't happen
 	if err != nil {
 		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
 			"ID":    "818aaf0b-4112-4be4-97b9-21cc084c7b8b",
 			"error": err,
-		}).Error("Problem to do gRPC-call to FenixTestDataSyncServer for 'SendAreYouAliveToFenixTestDataServer'")
+		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendAreYouAliveToFenixExecutionServer'")
+
+		return false, err.Error()
 
 	} else if returnMessage.AckNack == false {
 		// FenixTestDataSyncServer couldn't handle gPRC call
 		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
 			"ID": "2ecbc800-2fb6-4e88-858d-a421b61c5529",
 			"Message from FenixTestDataSyncServerObject": returnMessage.Comments,
-		}).Error("Problem to do gRPC-call to FenixTestDataSyncServer for 'SendAreYouAliveToFenixTestDataServer'")
+		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendAreYouAliveToFenixExecutionServer'")
+
+		return false, err.Error()
 	}
 
 	return returnMessage.AckNack, returnMessage.Comments

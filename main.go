@@ -31,7 +31,7 @@ func init() {
 
 	var err error
 
-	// Get Environment variable to tell how this program was started
+	// Get Environment variable to tell how/were this worker is  running
 	var executionLocationForWorker = mustGetenv("ExecutionLocationForWorker")
 
 	switch executionLocationForWorker {
@@ -45,7 +45,26 @@ func init() {
 		common_config.ExecutionLocationForWorker = common_config.GCP
 
 	default:
-		fmt.Println("Unknown Execution location for FenixGuiServer: " + executionLocationForWorker + ". Expected one of the following: LOCALHOST_NODOCKER, LOCALHOST_DOCKER, GCP")
+		fmt.Println("Unknown Execution location for Worker: " + executionLocationForWorker + ". Expected one of the following: 'LOCALHOST_NODOCKER', 'LOCALHOST_DOCKER', 'GCP'")
+		os.Exit(0)
+
+	}
+
+	// Get Environment variable to tell were Fenix Execution Server is running
+	var executionLocationForExecutionServer = mustGetenv("ExecutionLocationForFenixTestExecutionServer")
+
+	switch executionLocationForExecutionServer {
+	case "LOCALHOST_NODOCKER":
+		common_config.ExecutionLocationForFenixExecutionServer = common_config.LocalhostNoDocker
+
+	case "LOCALHOST_DOCKER":
+		common_config.ExecutionLocationForFenixExecutionServer = common_config.LocalhostDocker
+
+	case "GCP":
+		common_config.ExecutionLocationForFenixExecutionServer = common_config.GCP
+
+	default:
+		fmt.Println("Unknown Execution location for Fenix Execution Server: " + executionLocationForWorker + ". Expected one of the following: 'LOCALHOST_NODOCKER', 'LOCALHOST_DOCKER', 'GCP'")
 		os.Exit(0)
 
 	}

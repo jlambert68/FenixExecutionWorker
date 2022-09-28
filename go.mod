@@ -3,8 +3,7 @@ module FenixExecutionWorker
 go 1.18
 
 require (
-	github.com/go-gota/gota v0.12.0
-	github.com/jlambert68/FenixGrpcApi v0.0.0-20220926182727-86d59cb2b32e
+	github.com/jlambert68/FenixGrpcApi v0.0.0-20220928065712-315c178077e3
 	github.com/sirupsen/logrus v1.9.0
 	golang.org/x/net v0.0.0-20220909164309-bea034e7d591
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
@@ -22,7 +21,6 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	gonum.org/v1/gonum v0.9.1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f // indirect
 )

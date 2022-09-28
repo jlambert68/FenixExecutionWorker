@@ -23,7 +23,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ReportCompleteTestInstructionEx
 	userId := "Execution Server"
 
 	// Check if Client is using correct proto files version
-	returnMessage := common_config.IsClientUsingCorrectTestDataProtoFileVersion(userId, fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(testInstructionExecutionRequestMessage.ProtoFileVersionUsedByClient))
+	returnMessage := common_config.IsCallerUsingCorrectWorkerProtoFileVersion(userId, fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(testInstructionExecutionRequestMessage.ProtoFileVersionUsedByClient))
 	if returnMessage != nil {
 
 		// Exiting
