@@ -33,5 +33,5 @@ type ChannelCommandStruct struct {
 // ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct
 // Parameter used when to forward the final execution result for a TestInstruction
 type ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct struct {
-	finalTestInstructionExecutionResultMessage *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage
+	FinalTestInstructionExecutionResultMessage *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage
 }

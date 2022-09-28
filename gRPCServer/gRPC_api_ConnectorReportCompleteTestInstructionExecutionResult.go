@@ -2,10 +2,10 @@ package gRPCServer
 
 import (
 	"FenixExecutionWorker/common_config"
+	"FenixExecutionWorker/workerEngine"
 	"context"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
-	"FenixExecutionWorker/workerEngine"
 )
 
 // ConnectorReportCompleteTestInstructionExecutionResult
@@ -24,28 +24,28 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ConnectorReportCompleteTestInst
 	userId := "Execution Connector"
 
 	// Check if Client is using correct proto files version
-	returnMessage := common_config.IsCallerUsingCorrectWorkerProtoFileVersion(userId, fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(processTestInstructionExecutionRequest.ProtoFileVersionUsedByClient))
+	returnMessage := common_config.IsCallerUsingCorrectWorkerProtoFileVersion(userId, fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(finalTestInstructionExecutionResultMessage.ClientSystemIdentification.ProtoFileVersionUsedByClient))
 	if returnMessage != nil {
 
 		return returnMessage, nil
 	}
 
 	// Send Message on CommandChannel to be able to send Result back to Fenix Execution Server
-	channelCommand :=  workerEngine.ChannelCommandStruct{
+	channelCommand := workerEngine.ChannelCommandStruct{
 		ChannelCommand: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServer,
-		ReportCompleteTestInstructionExecutionResultParameter: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct{finalTestInstructionExecutionResultMessageReference *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage
-		: finalTestInstructionExecutionResultMessage},
+		ReportCompleteTestInstructionExecutionResultParameter: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct{
+			FinalTestInstructionExecutionResultMessage: finalTestInstructionExecutionResultMessage},
 	}
 
 	*s.CommandChannelReference <- channelCommand
 
 	// Generate response
-		ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
-			AckNack:                      true,
-			Comments:                     "",
-			ErrorCodes:                   nil,
-			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
-		}
+	ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
+		AckNack:                      true,
+		Comments:                     "",
+		ErrorCodes:                   nil,
+		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+	}
 
 	return ackNackResponse, nil
 
