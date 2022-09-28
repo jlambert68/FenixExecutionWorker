@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// SendAreYouAliveToFenixExecutionServer - Send the client's TestDataHeaders to Fenix by calling Fenix's gPRC server
-func (fenixExecutionWorkerObject *messagesToExecutionServerObjectStruct) SendAreYouAliveToFenixExecutionServer() (bool, string) {
+// SendReportProcessingCapabilityToFenixExecutionServer - Worker send the execution capabilities regrading parallell executions
+func (fenixExecutionWorkerObject *messagesToExecutionServerObjectStruct) SendReportProcessingCapabilityToFenixExecutionServer(processingCapabilityMessage *fenixExecutionServerGrpcApi.ProcessingCapabilityMessage) (bool, string) {
 
 	var ctx context.Context
 	var returnMessageAckNack bool
@@ -21,19 +21,13 @@ func (fenixExecutionWorkerObject *messagesToExecutionServerObjectStruct) SendAre
 		return false, err.Error()
 	}
 
-	// Create the message with all test data to be sent to Fenix
-	emptyParameter := &fenixExecutionServerGrpcApi.EmptyParameter{
-
-		ProtoFileVersionUsedByClient: fenixExecutionServerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(common_config.GetHighestFenixExecutionServerProtoFileVersion()),
-	}
-
 	// Do gRPC-call
 	//ctx := context.Background()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer func() {
 		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
-			"ID": "c5ba19bd-75ff-4366-818d-745d4d7f1a52",
-		}).Error("Running Defer Cancel function")
+			"ID": "f3aa9000-c175-407f-bdd8-96624c087a39",
+		}).Debug("Running Defer Cancel function")
 		cancel()
 	}()
 
@@ -48,23 +42,23 @@ func (fenixExecutionWorkerObject *messagesToExecutionServerObjectStruct) SendAre
 
 	}
 
-	returnMessage, err := fenixExecutionServerGrpcClient.AreYouAlive(ctx, emptyParameter)
+	returnMessage, err := fenixExecutionServerGrpcClient.ReportProcessingCapability(ctx, processingCapabilityMessage)
 
 	// Shouldn't happen
 	if err != nil {
 		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
-			"ID":    "818aaf0b-4112-4be4-97b9-21cc084c7b8b",
+			"ID":    "864d7750-d387-49e7-8eed-286650e52036",
 			"error": err,
-		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendAreYouAliveToFenixExecutionServer'")
+		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendReportProcessingCapabilityToFenixExecutionServer'")
 
 		return false, err.Error()
 
 	} else if returnMessage.AckNack == false {
 		// FenixTestDataSyncServer couldn't handle gPRC call
 		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
-			"ID": "2ecbc800-2fb6-4e88-858d-a421b61c5529",
-			"Message from FenixTestDataSyncServerObject": returnMessage.Comments,
-		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendAreYouAliveToFenixExecutionServer'")
+			"ID":                                  "d8abb6a3-d152-42ed-9e99-051e90d59c91",
+			"Message from Fenix Execution Server": returnMessage.Comments,
+		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendReportProcessingCapabilityToFenixExecutionServer'")
 
 		return false, err.Error()
 	}
