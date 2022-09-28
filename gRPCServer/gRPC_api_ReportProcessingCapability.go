@@ -23,7 +23,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ReportProcessingCapability(ctx 
 	userId := "Execution Server"
 
 	// Check if Client is using correct proto files version
-	returnMessage := common_config.IsCallerUsingCorrectWorkerProtoFileVersion(userId, fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(emptyParameter.ProtoFileVersionUsedByClient))
+	returnMessage := common_config.IsCallerUsingCorrectWorkerProtoFileVersion(userId, fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(emptyParameter.ProtoFileVersionUsedByClient))
 	if returnMessage != nil {
 
 		// Exiting
@@ -34,7 +34,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ReportProcessingCapability(ctx 
 		AckNack:                      true,
 		Comments:                     "",
 		ErrorCodes:                   nil,
-		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(common_config.GetHighestFenixTestDataProtoFileVersion()),
+		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 	}
 
 	return returnMessage, nil

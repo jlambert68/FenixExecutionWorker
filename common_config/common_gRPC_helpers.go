@@ -50,8 +50,6 @@ func IsCallerUsingCorrectWorkerProtoFileVersion(callingClientUuid string, usedPr
 
 }
 
-}
-
 // ********************************************************************************************************************
 
 // Get the highest FenixProtoFileVersionEnumeration for ExecutionServer-gRPC-api
@@ -100,4 +98,3 @@ func GetHighestExecutionWorkerProtoFileVersion() int32 {
 
 	return highestExecutionWorkerProtoFileVersion
 }
-

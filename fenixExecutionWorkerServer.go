@@ -27,9 +27,8 @@ func fenixExecutionWorkerMain() {
 
 	// Set up BackendObject
 	FenixExecutionWorkerObject = &fenixExecutionWorkerObjectStruct{
-		logger:         nil,
-		gcpAccessToken: nil,
-		GrpcServer:     &gRPCServer.FenixExecutionWorkerGrpcObjectStruct{},
+		logger:     nil,
+		GrpcServer: &gRPCServer.FenixExecutionWorkerGrpcObjectStruct{},
 	}
 
 	// Init logger
