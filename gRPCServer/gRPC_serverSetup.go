@@ -39,36 +39,41 @@ func (fenixExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct) Init
 
 	}
 
-	// Creates a new RegisterWorkerServer gRPCServer server
-	//go func() {
-	fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
-		"Id": "b0ccffb5-4367-464c-a3bc-460cafed16cb",
-	}).Info("Starting Backend gRPCServer Server")
+	// Create server and register the two gRPC-services to the server
+	fenixExecutionWorkerGrpcServer = grpc.NewServer()
+	fenixExecutionWorkerGrpcApi.RegisterFenixExecutionWorkerGrpcServicesServer(fenixExecutionWorkerGrpcServer, &fenixExecutionWorkerGrpcServicesServer{logger: logger})
+	fenixExecutionWorkerGrpcApi.RegisterFenixExecutionWorkerConnectorGrpcServicesServer(fenixExecutionWorkerGrpcServer, &fenixExecutionWorkerConnectorGrpcServicesServer{logger: logger})
 
-	registerFenixExecutionWorkerGrpcServicesServer = grpc.NewServer()
-	fenixExecutionWorkerGrpcApi.RegisterFenixExecutionWorkerGrpcServicesServer(registerFenixExecutionWorkerGrpcServicesServer, &fenixExecutionWorkerGrpcServicesServer{logger: logger})
+	// Register Reflection on the same server to be able for calling agents to see the methods that are offered
+	reflection.Register(fenixExecutionWorkerGrpcServer)
 
-	// Register RouteGuide on the same server.
-	reflection.Register(registerFenixExecutionWorkerGrpcServicesServer)
-
-	fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
-		"Id": "e843ece9-b707-4c60-b1d8-14464305e68f",
-		"common_config.FenixExecutionWorkerServerPort: ": common_config.FenixExecutionWorkerServerPort,
-	}).Info("registerFenixExecutionWorkerGrpcServicesServer for TestExecution-Worker Server started")
-	registerFenixExecutionWorkerGrpcServicesServer.Serve(lis)
-	//}()
+	// Start server
+	err = fenixExecutionWorkerGrpcServer.Serve(lis)
+	if err != nil {
+		fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
+			"Id":    "42abd1b8-2e01-4526-82b4-fb1d6af2b420",
+			"err: ": err,
+		}).Fatalln("Couldn't start gRPC server")
+	}
 
 }
 
 // StopGrpcServer - Stop Backend gRPCServer-server
 func (fenixExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct) StopGrpcServer() {
 
-	fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{}).Info("Gracefully stop for: registerFenixExecutionWorkerGrpcServicesServer")
-	registerFenixExecutionWorkerGrpcServicesServer.GracefulStop()
+	fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{}).Info("Gracefully stop for: fenixExecutionWorkerGrpcServer")
+	fenixExecutionWorkerGrpcServer.GracefulStop()
 
 	fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
 		"common_config.FenixExecutionWorkerServerPort: ": common_config.FenixExecutionWorkerServerPort,
 	}).Info("Close net.Listing")
-	_ = lis.Close()
+	err := lis.Close()
+	if err != nil {
+		fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
+			"Id":    "6385920d-76c7-4139-8b4a-c5e629cf2301",
+			"err: ": err,
+			"common_config.FenixExecutionWorkerServerPort": common_config.FenixExecutionWorkerServerPort,
+		}).Error("Couldn't stop listing on port")
+	}
 
 }
