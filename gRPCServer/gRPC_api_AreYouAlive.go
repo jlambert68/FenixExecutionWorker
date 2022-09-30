@@ -1,6 +1,7 @@
 package gRPCServer
 
 import (
+	"FenixExecutionWorker/common_config"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
@@ -18,5 +19,12 @@ func (s *fenixExecutionWorkerGrpcServicesServer) AreYouAlive(ctx context.Context
 		"id": "9c7f0c3d-7e9f-4c91-934e-8d7a22926d84",
 	}).Debug("Outgoing 'gRPCServer - AreYouAlive'")
 
-	return &fenixExecutionWorkerGrpcApi.AckNackResponse{AckNack: true, Comments: "I'am alive."}, nil
+	ackNackResponse := &fenixExecutionWorkerGrpcApi.AckNackResponse{
+		AckNack:                      true,
+		Comments:                     "I'am alive.",
+		ErrorCodes:                   nil,
+		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+	}
+
+	return ackNackResponse, nil
 }

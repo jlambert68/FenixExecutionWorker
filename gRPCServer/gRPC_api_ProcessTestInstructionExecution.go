@@ -5,6 +5,8 @@ import (
 	"context"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 )
 
 // ProcessTestInstructionExecution
@@ -37,6 +39,10 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		return processTestInstructionExecutionResponse, nil
 	}
 
+	// Generate duration for Execution:: TODO This is only for test and should be done in another way lator
+	executionDuration := time.Minute * 5
+	timeAtDurationEnd := time.Now().Add(executionDuration)
+
 	// Generate response
 	processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
 		AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
@@ -45,8 +51,8 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 			ErrorCodes:                   nil,
 			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 		},
-		TestInstructionExecutionUuid:   "",
-		ExpectedExecutionDuration:      nil,
+		TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
+		ExpectedExecutionDuration:      timestamppb.New(timeAtDurationEnd),
 		TestInstructionCanBeReExecuted: false,
 	}
 
