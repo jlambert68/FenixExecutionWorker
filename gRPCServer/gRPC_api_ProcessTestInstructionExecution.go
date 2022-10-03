@@ -3,6 +3,7 @@ package gRPCServer
 import (
 	"FenixExecutionWorker/common_config"
 	"context"
+	"fmt"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -38,6 +39,8 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 		return processTestInstructionExecutionResponse, nil
 	}
+
+	fmt.Println(processTestInstructionExecutionRequest)
 
 	// Generate duration for Execution:: TODO This is only for test and should be done in another way lator
 	executionDuration := time.Minute * 5

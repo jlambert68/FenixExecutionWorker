@@ -13,25 +13,20 @@ type FenixExecutionWorkerGrpcObjectStruct struct {
 	ExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct
 }
 
-// Variable holding everything together
-//var ExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct
-
 // gRPCServer variables
 var (
-	fenixExecutionWorkerGrpcServer                          *grpc.Server
-	registerFenixExecutionWorkerGrpcServicesServer          *grpc.Server
-	registerFenixExecutionWorkerConnectorGrpcServicesServer *grpc.Server
-	lis                                                     net.Listener
+	fenixExecutionWorkerGrpcServer *grpc.Server
+	lis                            net.Listener
 )
 
-// gRPCServer Server used for register clients Name, Ip and Por and Clients Test Enviroments and Clients Test Commandst
+// gRPCServer Server used from Execution Server
 type fenixExecutionWorkerGrpcServicesServer struct {
 	logger                  *logrus.Logger
 	CommandChannelReference *workerEngine.ExecutionEngineChannelType
 	fenixExecutionWorkerGrpcApi.UnimplementedFenixExecutionWorkerGrpcServicesServer
 }
 
-// gRPCServer Server used for register clients Name, Ip and Por and Clients Test Enviroments and Clients Test Commandst
+// gRPCServer Server used from Connector
 type fenixExecutionWorkerConnectorGrpcServicesServer struct {
 	logger                  *logrus.Logger
 	CommandChannelReference *workerEngine.ExecutionEngineChannelType
