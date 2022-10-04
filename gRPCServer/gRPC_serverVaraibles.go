@@ -41,6 +41,7 @@ type executionForwardChannelType chan executionForwardChannelStruct
 type executionForwardChannelStruct struct {
 	processTestInstructionExecutionReveredRequest *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReveredRequest
 	executionResponseChannelReference             *executionResponseChannelType
+	isKeepAliveMessage                            bool
 }
 
 // Channel used for response from Stream server (from Worker to Connector) that message has been sent

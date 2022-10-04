@@ -49,6 +49,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	executionForwardChannelMessage := executionForwardChannelStruct{
 		processTestInstructionExecutionReveredRequest: processTestInstructionExecutionRequest,
 		executionResponseChannelReference:             &executionResponseChannel,
+		isKeepAliveMessage:                            false,
 	}
 
 	// Send TestInstructionExecution to Stream-server, to later be sent to Connector, over channel

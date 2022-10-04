@@ -5,6 +5,7 @@ import (
 	"errors"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 // ConnectorRequestForProcessTestInstructionExecution
@@ -29,46 +30,102 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 		return errors.New(returnMessage.Comments)
 	}
 
+	// Recreate channel for incoming TestInstructionExecution from Execution Server
+	executionForwardChannel = make(chan executionForwardChannelStruct)
+
 	// Local channel to decide when Server stopped sending
 	done := make(chan bool)
 
 	go func() {
 
-		// Wait for incoming TestInstructionExecution from Execution Server
-		executionForwardChannelMessage := <-executionForwardChannel
+		for {
+			// Wait for incoming TestInstructionExecution from Execution Server
+			executionForwardChannelMessage := <-executionForwardChannel
 
-		testInstructionExecution := executionForwardChannelMessage.processTestInstructionExecutionReveredRequest
+			testInstructionExecution := executionForwardChannelMessage.processTestInstructionExecutionReveredRequest
 
-		err = streamServer.Send(testInstructionExecution)
-		if err != nil {
+			err = streamServer.Send(testInstructionExecution)
+			if err != nil {
 
-			s.logger.WithFields(logrus.Fields{
-				"id":                       "70ab1dcb-0be3-49b6-b49a-694bab529ed4",
-				"err":                      err,
-				"testInstructionExecution": testInstructionExecution,
-			}).Error("Got some problem when doing reversed streaming of TestInstructionExecution to Connector. Stopping Reversed Streaming")
+				s.logger.WithFields(logrus.Fields{
+					"id":                       "70ab1dcb-0be3-49b6-b49a-694bab529ed4",
+					"err":                      err,
+					"testInstructionExecution": testInstructionExecution,
+				}).Error("Got some problem when doing reversed streaming of TestInstructionExecution to Connector. Stopping Reversed Streaming")
 
-			// Create response message to be sent on response channel
-			executionResponseChanneMessage := executionResponseChannelStruct{
-				testInstructionExecutionIsSentToConnector: false,
-				err: err,
+				// Only send back response over response channel if it wasn't a 'keep alive' message
+				if testInstructionExecution.TestInstruction.TestInstructionName != "KeepAlive" {
+
+					// Create response message to be sent on response channel
+					executionResponseChannelMessage := executionResponseChannelStruct{
+						testInstructionExecutionIsSentToConnector: false,
+						err: err,
+					}
+
+					// Send message back over response channel that message was failed to be sent to Connector
+					*executionForwardChannelMessage.executionResponseChannelReference <- executionResponseChannelMessage
+				}
+
+				// Have the gRPC-call be continued, end stream server
+				done <- true //close(done)
+
+				return
+
 			}
 
-			// Send message back over response channel that message was failed to be sent to Connector
-			*executionForwardChannelMessage.executionResponseChannelReference <- executionResponseChanneMessage
+			// Check if message only was a keep alive message to Connector
+			if executionForwardChannelMessage.isKeepAliveMessage == false {
 
-			// Have the gRPC-call be continued
-			done <- true //close(done)
+				// Is a standard TestInstructionExecution that was sent to Connector
+				s.logger.WithFields(logrus.Fields{
+					"id":                       "6f5e6dc7-cef5-4008-a4ea-406be80ded4c",
+					"testInstructionExecution": testInstructionExecution,
+				}).Debug("Success in reversed streaming TestInstructionExecution to Connector")
 
-			return
+			} else {
+
+				// Is a keep alive message that was sent to Connector
+				s.logger.WithFields(logrus.Fields{
+					"id":                       "c1d5a756-b7fa-48ae-953e-59dedd0671f4",
+					"testInstructionExecution": testInstructionExecution,
+				}).Debug("Success in reversed streaming TestInstructionExecution to Connector")
+			}
 		}
 
-		// Send message back over response channel that message was sent to Connector
+	}()
 
-		s.logger.WithFields(logrus.Fields{
-			"id":                       "6f5e6dc7-cef5-4008-a4ea-406be80ded4c",
-			"testInstructionExecution": testInstructionExecution,
-		}).Debug("Success in reversed streaming TestInstructionExecution to Connector")
+	// Feed 'executionForwardChannel' with messages every 15 seconds to keep connection open to Connector
+	go func() {
+
+		// Create keep alive message
+		ProcessTestInstructionExecutionReveredRequest_TestInstructionExecutionMessage := fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReveredRequest_TestInstructionExecutionMessage{
+			TestInstructionExecutionUuid: "KeepAlive",
+			TestInstructionUuid:          "KeepAlive",
+			TestInstructionName:          "KeepAlive",
+			MajorVersionNumber:           0,
+			MinorVersionNumber:           0,
+			TestInstructionAttributes:    nil,
+		}
+		processTestInstructionExecutionReveredRequest := fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReveredRequest{
+			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+			TestInstruction:              &ProcessTestInstructionExecutionReveredRequest_TestInstructionExecutionMessage,
+			TestData:                     nil,
+		}
+		keepAliveMessageToConnector := executionForwardChannelStruct{
+			processTestInstructionExecutionReveredRequest: &processTestInstructionExecutionReveredRequest,
+			executionResponseChannelReference:             nil,
+			isKeepAliveMessage:                            true,
+		}
+
+		for {
+
+			// Send Keep Alive message on channel to be sent to Connector
+			executionForwardChannel <- keepAliveMessageToConnector
+
+			// Sleep for 15 seconds before continue
+			time.Sleep(time.Second * 15)
+
+		}
 	}()
 
 	// Server stopped so wait for new connection
