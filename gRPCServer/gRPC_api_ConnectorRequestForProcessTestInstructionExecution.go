@@ -2,14 +2,13 @@ package gRPCServer
 
 import (
 	"FenixExecutionWorker/common_config"
-	"FenixExecutionWorker/workerEngine"
 	"errors"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 )
 
 // ConnectorRequestForProcessTestInstructionExecution
-// Used to send TestInstructions for Execution to Connector. Worker Stream tasks as response and it is done this way due to it is impossible to call Connector on SEB network
+// Used to send TestInstructions for Execution to Connector. Worker Stream tasks as response, and it is done this way due to it is impossible to call Connector on SEB network
 func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForProcessTestInstructionExecution(emptyParameter *fenixExecutionWorkerGrpcApi.EmptyParameter, streamServer fenixExecutionWorkerGrpcApi.FenixExecutionWorkerConnectorGrpcServices_ConnectorRequestForProcessTestInstructionExecutionServer) (err error) {
 
 	s.logger.WithFields(logrus.Fields{
@@ -75,23 +74,6 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 	// Server stopped so wait for new connection
 	<-done
 
-	// Send Message on CommandChannel to be able to send Result back to Fenix Execution Server
-	channelCommand := workerEngine.ChannelCommandStruct{
-		ChannelCommand: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServer,
-		ReportCompleteTestInstructionExecutionResultParameter: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct{
-			FinalTestInstructionExecutionResultMessage: finalTestInstructionExecutionResultMessage},
-	}
-
-	*s.CommandChannelReference <- channelCommand
-
-	// Generate response
-	ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
-		AckNack:                      true,
-		Comments:                     "",
-		ErrorCodes:                   nil,
-		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
-	}
-
-	return ackNackResponse, nil
+	return err
 
 }
