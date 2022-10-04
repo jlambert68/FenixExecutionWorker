@@ -42,21 +42,57 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 	fmt.Println(processTestInstructionExecutionRequest)
 
-	// Generate duration for Execution:: TODO This is only for test and should be done in another way lator
-	executionDuration := time.Minute * 5
-	timeAtDurationEnd := time.Now().Add(executionDuration)
+	// Create response channel to be able to get response when TestInstructionExecution is sent to Connector
+	var executionResponseChannel executionResponseChannelType
 
-	// Generate response
-	processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
-		AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
-			AckNack:                      true,
-			Comments:                     "",
-			ErrorCodes:                   nil,
-			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
-		},
-		TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
-		ExpectedExecutionDuration:      timestamppb.New(timeAtDurationEnd),
-		TestInstructionCanBeReExecuted: false,
+	// Create message to be sent to stream-server
+	executionForwardChannelMessage := executionForwardChannelStruct{
+		processTestInstructionExecutionReveredRequest: processTestInstructionExecutionRequest,
+		executionResponseChannelReference:             &executionResponseChannel,
+	}
+
+	// Send TestInstructionExecution to Stream-server, to later be sent to Connector, over channel
+	executionForwardChannel <- executionForwardChannelMessage
+
+	// Wait for response from stream-server that message has been sent TODO create some maximum time before clearing channel
+	executionResponseChannelMessage := <-executionResponseChannel
+
+	if executionResponseChannelMessage.testInstructionExecutionIsSentToConnector == false ||
+		executionResponseChannelMessage.err != nil {
+		// Message failed to be sent to Connector
+
+		// Generate response
+		processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
+			AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
+				AckNack:                      false,
+				Comments:                     fmt.Sprintf("Message couldn't be sent to Connector, error: '%s'", err.Error()),
+				ErrorCodes:                   nil,
+				ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+			},
+			TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
+			ExpectedExecutionDuration:      nil,
+			TestInstructionCanBeReExecuted: false,
+		}
+
+	} else {
+		// Message succeeded to be sent to Connector
+
+		// Generate duration for Execution:: TODO This is only for test and should be done in another way lator
+		executionDuration := time.Minute * 5
+		timeAtDurationEnd := time.Now().Add(executionDuration)
+
+		// Generate response
+		processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
+			AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
+				AckNack:                      true,
+				Comments:                     "",
+				ErrorCodes:                   nil,
+				ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+			},
+			TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
+			ExpectedExecutionDuration:      timestamppb.New(timeAtDurationEnd),
+			TestInstructionCanBeReExecuted: false,
+		}
 	}
 
 	return processTestInstructionExecutionResponse, nil

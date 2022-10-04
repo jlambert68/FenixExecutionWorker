@@ -32,3 +32,21 @@ type fenixExecutionWorkerConnectorGrpcServicesServer struct {
 	CommandChannelReference *workerEngine.ExecutionEngineChannelType
 	fenixExecutionWorkerGrpcApi.UnimplementedFenixExecutionWorkerConnectorGrpcServicesServer
 }
+
+// Channel used for forwarding TestInstructionExecutions to stream-server which then forwards it to the Connector
+var executionForwardChannel executionForwardChannelType
+
+type executionForwardChannelType chan executionForwardChannelStruct
+
+type executionForwardChannelStruct struct {
+	processTestInstructionExecutionReveredRequest *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReveredRequest
+	executionResponseChannelReference             *executionResponseChannelType
+}
+
+// Channel used for response from Stream server (from Worker to Connector) that message has been sent
+type executionResponseChannelType chan executionResponseChannelStruct
+
+type executionResponseChannelStruct struct {
+	testInstructionExecutionIsSentToConnector bool
+	err                                       error
+}

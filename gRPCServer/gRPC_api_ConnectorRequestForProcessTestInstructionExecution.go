@@ -35,11 +35,10 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 
 	go func() {
 
-		testInstructionExecution := &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReveredRequest{
-			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
-			TestInstruction:              nil,
-			TestData:                     nil,
-		}
+		// Wait for incoming TestInstructionExecution from Execution Server
+		executionForwardChannelMessage := <-executionForwardChannel
+
+		testInstructionExecution := executionForwardChannelMessage.processTestInstructionExecutionReveredRequest
 
 		err = streamServer.Send(testInstructionExecution)
 		if err != nil {
@@ -50,10 +49,22 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 				"testInstructionExecution": testInstructionExecution,
 			}).Error("Got some problem when doing reversed streaming of TestInstructionExecution to Connector. Stopping Reversed Streaming")
 
+			// Create response message to be sent on response channel
+			executionResponseChanneMessage := executionResponseChannelStruct{
+				testInstructionExecutionIsSentToConnector: false,
+				err: err,
+			}
+
+			// Send message back over response channel that message was failed to be sent to Connector
+			*executionForwardChannelMessage.executionResponseChannelReference <- executionResponseChanneMessage
+
+			// Have the gRPC-call be continued
 			done <- true //close(done)
 
 			return
 		}
+
+		// Send message back over response channel that message was sent to Connector
 
 		s.logger.WithFields(logrus.Fields{
 			"id":                       "6f5e6dc7-cef5-4008-a4ea-406be80ded4c",
