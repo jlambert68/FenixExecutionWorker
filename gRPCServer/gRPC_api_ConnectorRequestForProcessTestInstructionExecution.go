@@ -38,14 +38,27 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 
 	go func() {
 
+		// We have an active connection to Connector
+		connectorHasConnected = true
+
 		for {
 			// Wait for incoming TestInstructionExecution from Execution Server
 			executionForwardChannelMessage := <-executionForwardChannel
 
 			testInstructionExecution := executionForwardChannelMessage.processTestInstructionExecutionReveredRequest
 
+			// If Connector stops responding then exit
+			if connectorHasConnected == false {
+				done <- true //close(done)
+
+				return
+			}
+
 			err = streamServer.Send(testInstructionExecution)
 			if err != nil {
+
+				// We don't have an active connection to Connector
+				connectorHasConnected = false
 
 				s.logger.WithFields(logrus.Fields{
 					"id":                       "70ab1dcb-0be3-49b6-b49a-694bab529ed4",
@@ -76,6 +89,15 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 			// Check if message only was a keep alive message to Connector
 			if executionForwardChannelMessage.isKeepAliveMessage == false {
 
+				// Create response message to be sent on response channel
+				executionResponseChannelMessage := executionResponseChannelStruct{
+					testInstructionExecutionIsSentToConnector: true,
+					err: nil,
+				}
+
+				// Send message back over response channel that message was failed to be sent to Connector
+				*executionForwardChannelMessage.executionResponseChannelReference <- executionResponseChannelMessage
+
 				// Is a standard TestInstructionExecution that was sent to Connector
 				s.logger.WithFields(logrus.Fields{
 					"id":                       "6f5e6dc7-cef5-4008-a4ea-406be80ded4c",
@@ -94,7 +116,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 
 	}()
 
-	// Feed 'executionForwardChannel' with messages every 15 seconds to keep connection open to Connector
+	// Feed 'executionForwardChannel' with messages every 15 seconds to check if Connector is alive
 	go func() {
 
 		// Create keep alive message
@@ -117,19 +139,42 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 			isKeepAliveMessage:                            true,
 		}
 
-		for {
+		var messageWasPickedFromExecutionForwardChannel bool
 
-			// Send Keep Alive message on channel to be sent to Connector
-			executionForwardChannel <- keepAliveMessageToConnector
+		for {
 
 			// Sleep for 15 seconds before continue
 			time.Sleep(time.Second * 15)
+
+			// If we haven't got an answer from Connector in 30 seconds then it must be down.
+			// We can get in this state if 'executionForwardChannel' is full and nobody picks the message from queue
+			messageWasPickedFromExecutionForwardChannel = false
+
+			go func() {
+				time.Sleep(time.Second * 30)
+				if messageWasPickedFromExecutionForwardChannel == false {
+					// Stop in channel
+					connectorHasConnected = false
+					s.logger.WithFields(logrus.Fields{
+						"id": "ad24ded4-4218-4ddd-93bb-2b8ec1a1a046",
+					}).Debug("No answer regarding Keep Alive-message, Connector is not responding")
+
+					done <- true //close(done)
+
+				}
+			}()
+
+			// Send Keep Alive message on channel to be sent to Connector
+			executionForwardChannel <- keepAliveMessageToConnector
+			messageWasPickedFromExecutionForwardChannel = true
 
 		}
 	}()
 
 	// Server stopped so wait for new connection
 	<-done
+
+	connectorHasConnected = false
 
 	return err
 

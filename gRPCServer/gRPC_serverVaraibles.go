@@ -51,3 +51,6 @@ type executionResponseChannelStruct struct {
 	testInstructionExecutionIsSentToConnector bool
 	err                                       error
 }
+
+// Used  by gRPC server that receives Connector-connections to inform gRPC-server that receives ExecutionServer-connections
+var connectorHasConnected bool

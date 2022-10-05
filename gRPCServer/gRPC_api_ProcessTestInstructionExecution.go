@@ -40,7 +40,32 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		return processTestInstructionExecutionResponse, nil
 	}
 
-	fmt.Println(processTestInstructionExecutionRequest)
+	// If there isn't an active connection to the Connector then  report that back
+	if connectorHasConnected == false {
+
+		// Generate response
+		processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
+			AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
+				AckNack:                      false,
+				Comments:                     fmt.Sprintf("Message couldn't be sent to Connector, due to no active Connector was found"),
+				ErrorCodes:                   nil,
+				ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+			},
+			TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
+			ExpectedExecutionDuration:      nil,
+			TestInstructionCanBeReExecuted: false,
+		}
+
+		// Return Response to Execution Server
+		return processTestInstructionExecutionResponse, nil
+
+	}
+
+	fmt.Println(processTestInstructionExecutionRequest) //TODO Remove
+	s.logger.WithFields(logrus.Fields{
+		"id":                                     "0909cb27-ab05-446b-9fe3-c36b05a6137b",
+		"processTestInstructionExecutionRequest": processTestInstructionExecutionRequest,
+	}).Debug("Received 'processTestInstructionExecutionRequest' from Execution Server")
 
 	// Create response channel to be able to get response when TestInstructionExecution is sent to Connector
 	var executionResponseChannel executionResponseChannelType

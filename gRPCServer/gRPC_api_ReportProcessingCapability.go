@@ -12,11 +12,11 @@ import (
 func (s *fenixExecutionWorkerGrpcServicesServer) ReportProcessingCapability(ctx context.Context, emptyParameter *fenixExecutionWorkerGrpcApi.EmptyParameter) (*fenixExecutionWorkerGrpcApi.AckNackResponse, error) {
 
 	s.logger.WithFields(logrus.Fields{
-		"id": "37bc2356-33a2-4e2c-9420-122df581d757",
+		"id": "2ac9ddfe-e879-4cb0-832b-866101b037b9",
 	}).Debug("Incoming 'gRPCServer - ReportProcessingCapability'")
 
 	s.logger.WithFields(logrus.Fields{
-		"id": "f3fd3e50-5770-48ad-8524-85f34d28545e",
+		"id": "0d35d5de-e6ab-45a1-bc1c-62dfdab5e2e6",
 	}).Debug("Outgoing 'gRPCServer - ReportProcessingCapability'")
 
 	// Calling system
