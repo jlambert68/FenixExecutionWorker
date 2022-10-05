@@ -103,15 +103,24 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	var processTestInstructionExecutionReversedResponseMapData *processTestInstructionExecutionReversedResponseStruct
 	processTestInstructionExecutionReversedResponseMapData = &processTestInstructionExecutionReversedResponseStruct{
 		testInstructionExecutionUuid:                                    processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid,
-		processTestInstructionExecutionReversedResponseChannelReference: processTestInstructionExecutionReversedResponseChannel,
+		processTestInstructionExecutionReversedResponseChannelReference: &processTestInstructionExecutionReversedResponseChannel,
 		savedInMapTimeStamp:                                             time.Now(),
 	}
 
 	// Save 'processTestInstructionExecutionReversedResponseChannelData' in Map
 	processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid] = processTestInstructionExecutionReversedResponseMapData
 
+	// Handle reversed response from Connector
+	var testInstructionExecutionReversedResponse *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReversedResponse
+	var gotReveresedResponseFromConnector bool
+	go func() {
+		testInstructionExecutionReversedResponse = <-processTestInstructionExecutionReversedResponseChannel
+		gotReveresedResponseFromConnector = true
+	}()
+
 	// Create response channel to be able to get response when TestInstructionExecution is sent to Connector
 	var executionResponseChannel executionResponseChannelType
+	executionResponseChannel = make(chan executionResponseChannelStruct)
 
 	// Create message to be sent to stream-server
 	executionForwardChannelMessage := executionForwardChannelStruct{
@@ -134,7 +143,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
 			AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
 				AckNack:                      false,
-				Comments:                     fmt.Sprintf("Message couldn't be sent to Connector, error: '%s'", err.Error()),
+				Comments:                     fmt.Sprintf("Message couldn't be sent to Connector, error: '%s'", executionResponseChannelMessage.err.Error()),
 				ErrorCodes:                   nil,
 				ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 			},
@@ -146,9 +155,13 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	} else {
 		// Message succeeded to be sent to Connector
 
-		// Wait for response from 'processTestInstructionExecutionReversedResponseChannel'
-		var testInstructionExecutionReversedResponse *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReversedResponse
-		testInstructionExecutionReversedResponse = <-processTestInstructionExecutionReversedResponseChannel
+		// Wait for response from 'processTestInstructionExecutionReversedResponseChannel' which is run as go-routine stated above
+		for {
+			if gotReveresedResponseFromConnector == true {
+				break
+			}
+
+		}
 
 		// Generate response
 		processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
