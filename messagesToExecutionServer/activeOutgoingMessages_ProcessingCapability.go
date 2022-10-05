@@ -25,7 +25,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendRep
 	//ctx := context.Background()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer func() {
-		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 			"ID": "f3aa9000-c175-407f-bdd8-96624c087a39",
 		}).Debug("Running Defer Cancel function")
 		cancel()
@@ -46,7 +46,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendRep
 
 	// Shouldn't happen
 	if err != nil {
-		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 			"ID":    "864d7750-d387-49e7-8eed-286650e52036",
 			"error": err,
 		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendReportProcessingCapabilityToFenixExecutionServer'")
@@ -55,7 +55,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendRep
 
 	} else if returnMessage.AckNack == false {
 		// FenixTestDataSyncServer couldn't handle gPRC call
-		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 			"ID":                                  "d8abb6a3-d152-42ed-9e99-051e90d59c91",
 			"Message from Fenix Execution Server": returnMessage.Comments,
 		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendReportProcessingCapabilityToFenixExecutionServer'")

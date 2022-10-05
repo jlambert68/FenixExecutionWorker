@@ -2,8 +2,10 @@ package gRPCServer
 
 import (
 	"FenixExecutionWorker/common_config"
-	"FenixExecutionWorker/workerEngine"
+	"FenixExecutionWorker/messagesToExecutionServer"
 	"context"
+	"fmt"
+	fenixExecutionServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionServerGrpcApi/go_grpc_api"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 )
@@ -13,11 +15,11 @@ import (
 func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportCompleteTestInstructionExecutionResult(ctx context.Context, finalTestInstructionExecutionResultMessage *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage) (ackNackResponse *fenixExecutionWorkerGrpcApi.AckNackResponse, err error) {
 
 	s.logger.WithFields(logrus.Fields{
-		"id": "d85d5be5-33e8-4b8e-9577-50e4b84df389",
+		"id": "44addf9e-2027-4b0d-9502-787194903e06",
 	}).Debug("Incoming 'gRPCServer - ConnectorReportCompleteTestInstructionExecutionResult'")
 
 	defer s.logger.WithFields(logrus.Fields{
-		"id": "0a46c193-d37a-40bc-8c7b-43c1c2e02898",
+		"id": "e658f679-be43-4427-9669-71d711223643",
 	}).Debug("Outgoing 'gRPCServer - ConnectorReportCompleteTestInstructionExecutionResult'")
 
 	// Calling system
@@ -30,20 +32,38 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 		return returnMessage, nil
 	}
 
-	// Send Message on CommandChannel to be able to send Result back to Fenix Execution Server
-	channelCommand := workerEngine.ChannelCommandStruct{
-		ChannelCommand: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServer,
-		ReportCompleteTestInstructionExecutionResultParameter: workerEngine.ChannelCommandSendReportCompleteTestInstructionExecutionResultToFenixExecutionServerStruct{
-			FinalTestInstructionExecutionResultMessage: finalTestInstructionExecutionResultMessage},
+	// Set up instance to use for execution gPRC
+	var fenixExecutionWorkerObject *messagesToExecutionServer.MessagesToExecutionServerObjectStruct
+	fenixExecutionWorkerObject = &messagesToExecutionServer.MessagesToExecutionServerObjectStruct{Logger: s.logger}
+
+	// Create 'FinalTestInstructionExecutionResultMessage'
+	var finalTestInstructionExecutionResultToServerMessage *fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage
+	finalTestInstructionExecutionResultToServerMessage = &fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage{
+		ClientSystemIdentification: &fenixExecutionServerGrpcApi.ClientSystemIdentificationMessage{
+			DomainUuid:                   finalTestInstructionExecutionResultMessage.ClientSystemIdentification.DomainUuid,
+			ProtoFileVersionUsedByClient: fenixExecutionServerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(common_config.GetHighestFenixExecutionServerProtoFileVersion()),
+		},
+		TestInstructionExecutionUuid:   finalTestInstructionExecutionResultMessage.TestInstructionExecutionUuid,
+		TestInstructionExecutionStatus: fenixExecutionServerGrpcApi.TestInstructionExecutionStatusEnum(finalTestInstructionExecutionResultMessage.TestInstructionExecutionStatus),
 	}
 
-	*s.CommandChannelReference <- channelCommand
+	succeededToSend, responseMessage := fenixExecutionWorkerObject.SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(finalTestInstructionExecutionResultToServerMessage)
+
+	if succeededToSend == false {
+		s.logger.WithFields(logrus.Fields{
+			"id":              "532dff93-5786-4350-96a2-ddf977ee5ec5",
+			"responseMessage": responseMessage,
+		}).Debug("Got some error when sending 'CompleteTestInstructionExecutionResultToFenixExecutionServer'")
+	}
+
+	// Create Error Codes
+	var errorCodes []fenixExecutionWorkerGrpcApi.ErrorCodesEnum
 
 	// Generate response
 	ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
-		AckNack:                      true,
-		Comments:                     "",
-		ErrorCodes:                   nil,
+		AckNack:                      succeededToSend,
+		Comments:                     fmt.Sprintf("Messagage from ExecutionServer: '%s'", responseMessage),
+		ErrorCodes:                   errorCodes,
 		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 	}
 

@@ -8,7 +8,7 @@ import (
 )
 
 type MessagesToExecutionServerObjectStruct struct {
-	logger         *logrus.Logger
+	Logger         *logrus.Logger
 	gcpAccessToken *oauth2.Token
 }
 

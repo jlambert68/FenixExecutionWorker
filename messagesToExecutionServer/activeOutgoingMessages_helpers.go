@@ -43,7 +43,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConn
 		remoteFenixExecutionServerConnection, err = grpc.Dial(FenixExecutionServerAddressToDial, grpc.WithInsecure())
 	}
 	if err != nil {
-		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 			"ID":                                "50b59b1b-57ce-4c27-aa84-617f0cde3100",
 			"FenixExecutionServerAddressToDial": FenixExecutionServerAddressToDial,
 			"error message":                     err,
@@ -52,7 +52,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConn
 		return err
 
 	} else {
-		fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 			"ID":                                "0c650bbc-45d0-4029-bd25-4ced9925a059",
 			"FenixExecutionServerAddressToDial": FenixExecutionServerAddressToDial,
 		}).Info("gRPC connection OK to FenixExecutionServer")
@@ -75,7 +75,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) generat
 		// A given TokenSource is specific to the audience.
 		tokenSource, err := idtoken.NewTokenSource(ctx, "https://"+common_config.FenixExecutionServerAddress)
 		if err != nil {
-			fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+			fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 				"ID":  "8ba622d8-b4cd-46c7-9f81-d9ade2568eca",
 				"err": err,
 			}).Error("Couldn't generate access token")
@@ -85,14 +85,14 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) generat
 
 		token, err := tokenSource.Token()
 		if err != nil {
-			fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+			fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 				"ID":  "0cf31da5-9e6b-41bc-96f1-6b78fb446194",
 				"err": err,
 			}).Error("Problem getting the token")
 
 			return nil, false, "Problem getting the token"
 		} else {
-			fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+			fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 				"ID":    "8b1ca089-0797-4ee6-bf9d-f9b06f606ae9",
 				"token": token,
 			}).Debug("Got Bearer Token")
@@ -102,7 +102,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) generat
 
 	}
 
-	fenixExecutionWorkerObject.logger.WithFields(logrus.Fields{
+	fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 		"ID": "cd124ca3-87bb-431b-9e7f-e044c52b4960",
 		"FenixExecutionWorkerObject.gcpAccessToken": fenixExecutionWorkerObject.gcpAccessToken,
 	}).Debug("Will use Bearer Token")
