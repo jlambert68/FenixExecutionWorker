@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
+	"time"
 )
 
 type FenixExecutionWorkerGrpcObjectStruct struct {
@@ -33,6 +34,10 @@ type fenixExecutionWorkerConnectorGrpcServicesServer struct {
 	fenixExecutionWorkerGrpcApi.UnimplementedFenixExecutionWorkerConnectorGrpcServicesServer
 }
 
+// Used  by gRPC server that receives Connector-connections to inform gRPC-server that receives ExecutionServer-connections
+var connectorHasConnected bool
+
+// *******************************************************************************************
 // Channel used for forwarding TestInstructionExecutions to stream-server which then forwards it to the Connector
 var executionForwardChannel executionForwardChannelType
 
@@ -44,6 +49,8 @@ type executionForwardChannelStruct struct {
 	isKeepAliveMessage                            bool
 }
 
+// *******************************************************************************************
+
 // Channel used for response from Stream server (from Worker to Connector) that message has been sent
 type executionResponseChannelType chan executionResponseChannelStruct
 
@@ -52,5 +59,14 @@ type executionResponseChannelStruct struct {
 	err                                       error
 }
 
-// Used  by gRPC server that receives Connector-connections to inform gRPC-server that receives ExecutionServer-connections
-var connectorHasConnected bool
+// *******************************************************************************************
+// Channel for handling 'ProcessTestInstructionExecutionReversedResponse' because that messages comes as a separate gRPC-call from Connector
+var processTestInstructionExecutionReversedResponseChannelMap map[string]*processTestInstructionExecutionReversedResponseStruct //map[testInstructionExecutionUuid]*processTestInstructionExecutionReversedResponseChannelStruct //
+
+type processTestInstructionExecutionReversedResponseStruct struct {
+	testInstructionExecutionUuid                                    string
+	processTestInstructionExecutionReversedResponseChannelReference *processTestInstructionExecutionReversedResponseChannelType
+	savedInMapTimeStamp                                             time.Time
+}
+
+type processTestInstructionExecutionReversedResponseChannelType chan *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReversedResponse

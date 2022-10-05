@@ -6,7 +6,6 @@ import (
 	"fmt"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
@@ -61,11 +60,55 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 	}
 
-	fmt.Println(processTestInstructionExecutionRequest) //TODO Remove
+	// fmt.Println(processTestInstructionExecutionRequest) //TODO Remove
+
 	s.logger.WithFields(logrus.Fields{
 		"id":                                     "0909cb27-ab05-446b-9fe3-c36b05a6137b",
 		"processTestInstructionExecutionRequest": processTestInstructionExecutionRequest,
 	}).Debug("Received 'processTestInstructionExecutionRequest' from Execution Server")
+
+	//  Check that TestInstructionExecutionUuid already is in Map
+	_, existsInMap := processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid]
+
+	// Shouldn't exist in map
+	if existsInMap == true {
+		s.logger.WithFields(logrus.Fields{
+			"id":                                     "df3ddde1-f55d-4d47-86bf-88626a6bb3ea",
+			"processTestInstructionExecutionRequest": processTestInstructionExecutionRequest,
+		}).Error("TestInstructionExecutionUuid already exists i 'processTestInstructionExecutionReversedResponseChannelMap'")
+
+		// Generate response
+		processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
+			AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
+				AckNack:                      false,
+				Comments:                     fmt.Sprintf("TestInstructionExecutionUuid already exists i 'processTestInstructionExecutionReversedResponseChannelMap'"),
+				ErrorCodes:                   nil,
+				ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+			},
+			TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
+			ExpectedExecutionDuration:      nil,
+			TestInstructionCanBeReExecuted: false,
+		}
+
+		// Return Response to Execution Server
+		return processTestInstructionExecutionResponse, nil
+
+	}
+
+	// Create response channel to be able to get the 'processTestInstructionExecutionReversedResponse' back from Connector
+	var processTestInstructionExecutionReversedResponseChannel processTestInstructionExecutionReversedResponseChannelType
+	processTestInstructionExecutionReversedResponseChannel = make(chan *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReversedResponse)
+
+	// Create data for 'processTestInstructionExecutionReversedResponseChannelMap'
+	var processTestInstructionExecutionReversedResponseMapData *processTestInstructionExecutionReversedResponseStruct
+	processTestInstructionExecutionReversedResponseMapData = &processTestInstructionExecutionReversedResponseStruct{
+		testInstructionExecutionUuid:                                    processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid,
+		processTestInstructionExecutionReversedResponseChannelReference: processTestInstructionExecutionReversedResponseChannel,
+		savedInMapTimeStamp:                                             time.Now(),
+	}
+
+	// Save 'processTestInstructionExecutionReversedResponseChannelData' in Map
+	processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid] = processTestInstructionExecutionReversedResponseMapData
 
 	// Create response channel to be able to get response when TestInstructionExecution is sent to Connector
 	var executionResponseChannel executionResponseChannelType
@@ -103,23 +146,27 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	} else {
 		// Message succeeded to be sent to Connector
 
-		// Generate duration for Execution:: TODO This is only for test and should be done in another way lator
-		executionDuration := time.Minute * 5
-		timeAtDurationEnd := time.Now().Add(executionDuration)
+		// Wait for response from 'processTestInstructionExecutionReversedResponseChannel'
+		var testInstructionExecutionReversedResponse *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReversedResponse
+		testInstructionExecutionReversedResponse = <-processTestInstructionExecutionReversedResponseChannel
 
 		// Generate response
 		processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
 			AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
-				AckNack:                      true,
-				Comments:                     "",
-				ErrorCodes:                   nil,
+				AckNack:                      testInstructionExecutionReversedResponse.AckNackResponse.AckNack,
+				Comments:                     testInstructionExecutionReversedResponse.AckNackResponse.Comments,
+				ErrorCodes:                   testInstructionExecutionReversedResponse.AckNackResponse.ErrorCodes,
 				ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 			},
 			TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
-			ExpectedExecutionDuration:      timestamppb.New(timeAtDurationEnd),
-			TestInstructionCanBeReExecuted: false,
+			ExpectedExecutionDuration:      testInstructionExecutionReversedResponse.ExpectedExecutionDuration,
+			TestInstructionCanBeReExecuted: testInstructionExecutionReversedResponse.TestInstructionCanBeReExecuted,
 		}
+
 	}
+
+	// Remove message from Map
+	delete(processTestInstructionExecutionReversedResponseChannelMap, processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid)
 
 	return processTestInstructionExecutionResponse, nil
 

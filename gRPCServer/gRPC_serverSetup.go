@@ -15,6 +15,9 @@ func (fenixExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct) Init
 
 	var err error
 
+	// Initiate map for 'processTestInstructionExecutionReversedResponses'
+	processTestInstructionExecutionReversedResponseChannelMap = make(map[string]*processTestInstructionExecutionReversedResponseStruct)
+
 	// Find first non allocated port from defined start port
 	fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
 		"Id": "054bc0ef-93bb-4b75-8630-74e3823f71da",
