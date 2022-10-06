@@ -15,6 +15,6 @@ type MessagesToExecutionServerObjectStruct struct {
 // Variables used for contacting Fenix Execution Server
 var (
 	remoteFenixExecutionServerConnection *grpc.ClientConn
-	FenixExecutionServerAddressToDial    string
-	fenixExecutionServerGrpcClient       fenixExecutionServerGrpcApi.FenixExecutionServerGrpcServicesClient
+	//FenixExecutionServerAddressToDial    string
+	fenixExecutionServerGrpcClient fenixExecutionServerGrpcApi.FenixExecutionServerGrpcServicesClient
 )

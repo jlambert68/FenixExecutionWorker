@@ -25,9 +25,9 @@ func (fenixExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct) Init
 
 	fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
 		"Id": "ca3593b1-466b-4536-be91-5e038de178f4",
-		"common_config.FenixExecutionWorkerServerPort: ": common_config.FenixExecutionWorkerServerPort,
+		"common_config.ExecutionWorkerServerPort: ": common_config.ExecutionWorkerServerPort,
 	}).Info("Start listening on:")
-	lis, err = net.Listen("tcp", ":"+strconv.Itoa(common_config.FenixExecutionWorkerServerPort))
+	lis, err = net.Listen("tcp", ":"+strconv.Itoa(common_config.ExecutionWorkerServerPort))
 
 	if err != nil {
 		fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
@@ -37,7 +37,7 @@ func (fenixExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct) Init
 	} else {
 		fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
 			"Id": "ba070b9b-5d57-4c0a-ab4c-a76247a50fd3",
-			"common_config.FenixExecutionWorkerServerPort: ": common_config.FenixExecutionWorkerServerPort,
+			"common_config.ExecutionWorkerServerPort: ": common_config.ExecutionWorkerServerPort,
 		}).Info("Success in listening on port:")
 
 	}
@@ -68,14 +68,14 @@ func (fenixExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct) Stop
 	fenixExecutionWorkerGrpcServer.GracefulStop()
 
 	fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
-		"common_config.FenixExecutionWorkerServerPort: ": common_config.FenixExecutionWorkerServerPort,
+		"common_config.FenixExecutionWorkerServerPort: ": common_config.ExecutionWorkerServerPort,
 	}).Info("Close net.Listing")
 	err := lis.Close()
 	if err != nil {
 		fenixExecutionWorkerGrpcObject.logger.WithFields(logrus.Fields{
 			"Id":    "6385920d-76c7-4139-8b4a-c5e629cf2301",
 			"err: ": err,
-			"common_config.FenixExecutionWorkerServerPort": common_config.FenixExecutionWorkerServerPort,
+			"common_config.FenixExecutionWorkerServerPort": common_config.ExecutionWorkerServerPort,
 		}).Error("Couldn't stop listing on port")
 	}
 

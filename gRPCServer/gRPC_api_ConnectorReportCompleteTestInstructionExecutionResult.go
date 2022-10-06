@@ -43,8 +43,9 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 			DomainUuid:                   finalTestInstructionExecutionResultMessage.ClientSystemIdentification.DomainUuid,
 			ProtoFileVersionUsedByClient: fenixExecutionServerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(common_config.GetHighestFenixExecutionServerProtoFileVersion()),
 		},
-		TestInstructionExecutionUuid:   finalTestInstructionExecutionResultMessage.TestInstructionExecutionUuid,
-		TestInstructionExecutionStatus: fenixExecutionServerGrpcApi.TestInstructionExecutionStatusEnum(finalTestInstructionExecutionResultMessage.TestInstructionExecutionStatus),
+		TestInstructionExecutionUuid:         finalTestInstructionExecutionResultMessage.TestInstructionExecutionUuid,
+		TestInstructionExecutionStatus:       fenixExecutionServerGrpcApi.TestInstructionExecutionStatusEnum(finalTestInstructionExecutionResultMessage.TestInstructionExecutionStatus),
+		TestInstructionExecutionEndTimeStamp: finalTestInstructionExecutionResultMessage.TestInstructionExecutionEndTimeStamp,
 	}
 
 	succeededToSend, responseMessage := fenixExecutionWorkerObject.SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(finalTestInstructionExecutionResultToServerMessage)
@@ -53,7 +54,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 		s.logger.WithFields(logrus.Fields{
 			"id":              "532dff93-5786-4350-96a2-ddf977ee5ec5",
 			"responseMessage": responseMessage,
-		}).Debug("Got some error when sending 'CompleteTestInstructionExecutionResultToFenixExecutionServer'")
+		}).Error("Got some error when sending 'CompleteTestInstructionExecutionResultToFenixExecutionServer'")
 	}
 
 	// Create Error Codes

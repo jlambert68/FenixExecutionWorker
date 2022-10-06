@@ -37,24 +37,24 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConn
 	// When run on GCP, use credentials
 	if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
 		// Run on GCP
-		remoteFenixExecutionServerConnection, err = grpc.Dial(FenixExecutionServerAddressToDial, opts...)
+		remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddress, opts...)
 	} else {
 		// Run Local
-		remoteFenixExecutionServerConnection, err = grpc.Dial(FenixExecutionServerAddressToDial, grpc.WithInsecure())
+		remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddressToDial, grpc.WithInsecure())
 	}
 	if err != nil {
 		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-			"ID":                                "50b59b1b-57ce-4c27-aa84-617f0cde3100",
-			"FenixExecutionServerAddressToDial": FenixExecutionServerAddressToDial,
-			"error message":                     err,
+			"ID": "50b59b1b-57ce-4c27-aa84-617f0cde3100",
+			"common_config.FenixExecutionServerAddressToDial": common_config.FenixExecutionServerAddressToDial,
+			"error message": err,
 		}).Error("Did not connect to FenixExecutionServer via gRPC")
 
 		return err
 
 	} else {
 		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-			"ID":                                "0c650bbc-45d0-4029-bd25-4ced9925a059",
-			"FenixExecutionServerAddressToDial": FenixExecutionServerAddressToDial,
+			"ID": "0c650bbc-45d0-4029-bd25-4ced9925a059",
+			"common_config.FenixExecutionServerAddressToDial": common_config.FenixExecutionServerAddressToDial,
 		}).Info("gRPC connection OK to FenixExecutionServer")
 
 		// Creates a new Clients

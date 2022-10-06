@@ -60,7 +60,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendRep
 			"Message from Fenix Execution Server": returnMessage.Comments,
 		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer'")
 
-		return false, err.Error()
+		return false, returnMessage.Comments
 	}
 
 	return returnMessage.AckNack, returnMessage.Comments
