@@ -2,6 +2,7 @@ package main
 
 import (
 	"FenixExecutionWorker/common_config"
+	"github.com/sirupsen/logrus"
 	"strconv"
 
 	//"flag"
@@ -89,4 +90,22 @@ func init() {
 		os.Exit(0)
 
 	}
+
+	// Extract Debug level
+	var loggingLevel = mustGetenv("LoggingLevel")
+
+	switch loggingLevel {
+
+	case "DebugLevel":
+		common_config.LoggingLevel = logrus.DebugLevel
+
+	case "InfoLevel":
+		common_config.LoggingLevel = logrus.InfoLevel
+
+	default:
+		fmt.Println("Unknown LoggingLevel '" + loggingLevel + "'. Expected one of the following: 'DebugLevel', 'InfoLevel'")
+		os.Exit(0)
+
+	}
+
 }
