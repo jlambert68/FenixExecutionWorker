@@ -37,7 +37,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConn
 	// When run on GCP, use credentials
 	if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
 		// Run on GCP
-		remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddress, opts...)
+		remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddressToDial, opts...)
 	} else {
 		// Run Local
 		remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddressToDial, grpc.WithInsecure())
