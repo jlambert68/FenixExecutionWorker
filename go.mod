@@ -3,7 +3,7 @@ module FenixExecutionWorker
 go 1.18
 
 require (
-	github.com/jlambert68/FenixGrpcApi v0.0.0-20221006075932-f3652b179e7c
+	github.com/jlambert68/FenixGrpcApi v0.0.0-20221024132730-198d27465688
 	github.com/sirupsen/logrus v1.9.0
 	golang.org/x/net v0.0.0-20220909164309-bea034e7d591
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
