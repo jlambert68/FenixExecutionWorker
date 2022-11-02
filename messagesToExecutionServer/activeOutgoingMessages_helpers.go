@@ -20,45 +20,66 @@ import (
 // SetConnectionToFenixTestExecutionServer - Set upp connection and Dial to FenixExecutionServer
 func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConnectionToFenixTestExecutionServer() (err error) {
 
+	// slice with sleep time, in milliseconds, between each attempt to Dial to Server
+	var sleepTimeBetweenDialAttempts []int
+	sleepTimeBetweenDialAttempts = []int{100, 100, 200, 200, 300, 300, 500, 500, 600, 1000} // Total: 3.6 seconds
+
 	var opts []grpc.DialOption
 
-	//When running on GCP then use credential otherwise not
-	if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
-		creds := credentials.NewTLS(&tls.Config{
-			InsecureSkipVerify: true,
-		})
+	// Do multiple attempts to do connection to Execution Server
+	var numberOfDialAttempts int
+	var dialAttemptCounter int
+	numberOfDialAttempts = len(sleepTimeBetweenDialAttempts)
+	dialAttemptCounter = 0
 
-		opts = []grpc.DialOption{
-			grpc.WithTransportCredentials(creds),
+	for {
+
+		//When running on GCP then use credential otherwise not
+		if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
+			creds := credentials.NewTLS(&tls.Config{
+				InsecureSkipVerify: true,
+			})
+
+			opts = []grpc.DialOption{
+				grpc.WithTransportCredentials(creds),
+			}
 		}
-	}
 
-	// Set up connection to Fenix Execution Server
-	// When run on GCP, use credentials
-	if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
-		// Run on GCP
-		remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddressToDial, opts...)
-	} else {
-		// Run Local
-		remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddressToDial, grpc.WithInsecure())
-	}
-	if err != nil {
-		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-			"ID": "50b59b1b-57ce-4c27-aa84-617f0cde3100",
-			"common_config.FenixExecutionServerAddressToDial": common_config.FenixExecutionServerAddressToDial,
-			"error message": err,
-		}).Error("Did not connect to FenixExecutionServer via gRPC")
+		// Set up connection to Fenix Execution Server
+		// When run on GCP, use credentials
+		if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
+			// Run on GCP
+			remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddressToDial, opts...)
+		} else {
+			// Run Local
+			remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddressToDial, grpc.WithInsecure())
+		}
+		if err != nil {
+			fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
+				"ID": "50b59b1b-57ce-4c27-aa84-617f0cde3100",
+				"common_config.FenixExecutionServerAddressToDial": common_config.FenixExecutionServerAddressToDial,
+				"error message":      err,
+				"dialAttemptCounter": dialAttemptCounter,
+			}).Error("Did not connect to FenixExecutionServer via gRPC")
 
-		return err
+			// Only return the error after last attempt
+			if dialAttemptCounter >= numberOfDialAttempts {
+				return err
+			}
 
-	} else {
-		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-			"ID": "0c650bbc-45d0-4029-bd25-4ced9925a059",
-			"common_config.FenixExecutionServerAddressToDial": common_config.FenixExecutionServerAddressToDial,
-		}).Info("gRPC connection OK to FenixExecutionServer")
+		} else {
+			fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
+				"ID": "0c650bbc-45d0-4029-bd25-4ced9925a059",
+				"common_config.FenixExecutionServerAddressToDial": common_config.FenixExecutionServerAddressToDial,
+			}).Info("gRPC connection OK to FenixExecutionServer")
 
-		// Creates a new Clients
-		fenixExecutionServerGrpcClient = fenixExecutionServerGrpcApi.NewFenixExecutionServerGrpcServicesClient(remoteFenixExecutionServerConnection)
+			// Creates a new Clients
+			fenixExecutionServerGrpcClient = fenixExecutionServerGrpcApi.NewFenixExecutionServerGrpcServicesClient(remoteFenixExecutionServerConnection)
+
+		}
+
+		// Sleep for some time before retrying to connect
+		time.Sleep(time.Millisecond * time.Duration(sleepTimeBetweenDialAttempts[dialAttemptCounter-1]))
 
 	}
 	return err

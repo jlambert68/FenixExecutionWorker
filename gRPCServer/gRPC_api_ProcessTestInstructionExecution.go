@@ -39,35 +39,59 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		return processTestInstructionExecutionResponse, nil
 	}
 
-	// If there isn't an active connection to the Connector then  report that back
-	if connectorHasConnected == false {
+	// slice with sleep time, in milliseconds, between each attempt to do gRPC-call to Worker
+	var sleepTimeBetweenConnectorIsConnectedCheckAttempts []int
+	sleepTimeBetweenConnectorIsConnectedCheckAttempts = []int{100, 200, 300, 300, 500, 500, 1000, 1000, 1000, 1000} // Total: 5.9 seconds
 
-		// Generate response
-		processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
-			AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
-				AckNack:                      false,
-				Comments:                     fmt.Sprintf("Message couldn't be sent to Connector, due to no active Connector was found"),
-				ErrorCodes:                   nil,
-				ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
-			},
-			TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
-			ExpectedExecutionDuration:      nil,
-			TestInstructionCanBeReExecuted: false,
+	// Do multiple attempts to do gRPC-call to Execution Worker, when it fails
+	var numberOfConnectorIsConnectedCheckAttempts int
+	var connectorIsConnectedCheckAttemptCounter int
+	numberOfConnectorIsConnectedCheckAttempts = len(sleepTimeBetweenConnectorIsConnectedCheckAttempts)
+	connectorIsConnectedCheckAttemptCounter = 0
+
+	for {
+
+		// Add to counter for how many gRPC-call-attempts to Worker that have been done
+		connectorIsConnectedCheckAttemptCounter = connectorIsConnectedCheckAttemptCounter + 1
+
+		// If there isn't an active connection to the Connector then  report that back
+		if connectorHasConnected == false {
+
+			// Only return the that no Connector has connected after last attempt
+			if connectorIsConnectedCheckAttemptCounter >= numberOfConnectorIsConnectedCheckAttempts {
+
+				// Generate response
+				processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
+					AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
+						AckNack:                      false,
+						Comments:                     fmt.Sprintf("Message couldn't be sent to Connector, due to no active Connector was found"),
+						ErrorCodes:                   nil,
+						ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+					},
+					TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
+					ExpectedExecutionDuration:      nil,
+					TestInstructionCanBeReExecuted: false,
+				}
+
+				// Return Response to Execution Server
+				return processTestInstructionExecutionResponse, nil
+			}
+
+			// Sleep for some time before checking if Connector has Connected to Worker
+			time.Sleep(time.Millisecond * time.Duration(sleepTimeBetweenConnectorIsConnectedCheckAttempts[connectorIsConnectedCheckAttemptCounter-1]))
+
+		} else {
+			// Connector has connected to Worker
+			break
 		}
-
-		// Return Response to Execution Server
-		return processTestInstructionExecutionResponse, nil
-
 	}
-
-	// fmt.Println(processTestInstructionExecutionRequest) //TODO Remove
 
 	s.logger.WithFields(logrus.Fields{
 		"id":                                     "0909cb27-ab05-446b-9fe3-c36b05a6137b",
 		"processTestInstructionExecutionRequest": processTestInstructionExecutionRequest,
 	}).Debug("Received 'processTestInstructionExecutionRequest' from Execution Server")
 
-	//  Check that TestInstructionExecutionUuid already is in Map
+	//  Check that TestInstructionExecutionUuid isn't already is in Map
 	_, existsInMap := processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid]
 
 	// Shouldn't exist in map
