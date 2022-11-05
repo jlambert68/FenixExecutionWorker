@@ -14,7 +14,8 @@ import (
 func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution(ctx context.Context, processTestInstructionExecutionRequest *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReveredRequest) (processTestInstructionExecutionResponse *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse, err error) {
 
 	s.logger.WithFields(logrus.Fields{
-		"id": "37bc2356-33a2-4e2c-9420-122df581d757",
+		"id":                                     "37bc2356-33a2-4e2c-9420-122df581d757",
+		"processTestInstructionExecutionRequest": processTestInstructionExecutionRequest,
 	}).Debug("Incoming 'gRPCServer - ProcessTestInstructionExecution'")
 
 	defer s.logger.WithFields(logrus.Fields{

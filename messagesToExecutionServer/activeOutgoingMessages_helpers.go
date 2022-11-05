@@ -34,6 +34,8 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConn
 
 	for {
 
+		dialAttemptCounter = dialAttemptCounter + 1
+
 		//When running on GCP then use credential otherwise not
 		if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
 			creds := credentials.NewTLS(&tls.Config{
@@ -54,6 +56,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConn
 			// Run Local
 			remoteFenixExecutionServerConnection, err = grpc.Dial(common_config.FenixExecutionServerAddressToDial, grpc.WithInsecure())
 		}
+
 		if err != nil {
 			fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 				"ID": "50b59b1b-57ce-4c27-aa84-617f0cde3100",
@@ -76,13 +79,15 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConn
 			// Creates a new Clients
 			fenixExecutionServerGrpcClient = fenixExecutionServerGrpcApi.NewFenixExecutionServerGrpcServicesClient(remoteFenixExecutionServerConnection)
 
+			return err
+
 		}
 
 		// Sleep for some time before retrying to connect
 		time.Sleep(time.Millisecond * time.Duration(sleepTimeBetweenDialAttempts[dialAttemptCounter-1]))
 
 	}
-	return err
+
 }
 
 // Generate Google access token. Used when running in GCP

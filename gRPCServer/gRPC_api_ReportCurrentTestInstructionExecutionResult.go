@@ -12,7 +12,8 @@ import (
 func (s *fenixExecutionWorkerGrpcServicesServer) ReportCurrentTestInstructionExecutionResult(ctx context.Context, testInstructionExecutionRequestMessage *fenixExecutionWorkerGrpcApi.TestInstructionExecutionRequestMessage) (*fenixExecutionWorkerGrpcApi.AckNackResponse, error) {
 
 	s.logger.WithFields(logrus.Fields{
-		"id": "19b9dfce-8f53-4ff4-9558-f1cf8d871f9e",
+		"id":                                     "19b9dfce-8f53-4ff4-9558-f1cf8d871f9e",
+		"testInstructionExecutionRequestMessage": testInstructionExecutionRequestMessage,
 	}).Debug("Incoming 'gRPC - ReportCurrentTestInstructionExecutionResult'")
 
 	defer s.logger.WithFields(logrus.Fields{

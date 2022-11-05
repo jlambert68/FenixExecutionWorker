@@ -14,6 +14,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorProcessTestIn
 
 	s.logger.WithFields(logrus.Fields{
 		"id": "a0b241e2-1fa8-4b2d-990a-e238a182b869",
+		"processTestInstructionExecutionReversedResponse": processTestInstructionExecutionReversedResponse,
 	}).Debug("Incoming 'gRPCServer - ConnectorProcessTestInstructionExecutionReversedResponse'")
 
 	defer s.logger.WithFields(logrus.Fields{

@@ -16,6 +16,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 
 	s.logger.WithFields(logrus.Fields{
 		"id": "44addf9e-2027-4b0d-9502-787194903e06",
+		"finalTestInstructionExecutionResultMessage": finalTestInstructionExecutionResultMessage,
 	}).Debug("Incoming 'gRPCServer - ConnectorReportCompleteTestInstructionExecutionResult'")
 
 	defer s.logger.WithFields(logrus.Fields{
