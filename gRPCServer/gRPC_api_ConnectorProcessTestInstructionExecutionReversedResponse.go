@@ -32,7 +32,8 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorProcessTestIn
 	}
 
 	// Extract response channel
-	processTestInstructionExecutionReversedResponseData, existInMap := processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionReversedResponse.TestInstructionExecutionUuid]
+	// processTestInstructionExecutionReversedResponseData, existInMap := processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionReversedResponse.TestInstructionExecutionUuid]
+	processTestInstructionExecutionReversedResponseData, existInMap := loadFromTestInstructionExecutionReversedResponseChannelMap(processTestInstructionExecutionReversedResponse.TestInstructionExecutionUuid)
 
 	// Shouldn't exist in map
 	if existInMap == false {

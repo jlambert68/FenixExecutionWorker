@@ -93,7 +93,8 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	}).Debug("Received 'processTestInstructionExecutionRequest' from Execution Server")
 
 	//  Check that TestInstructionExecutionUuid isn't already is in Map
-	_, existsInMap := processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid]
+	//_, existsInMap :=  processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid]
+	_, existsInMap := loadFromTestInstructionExecutionReversedResponseChannelMap(processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid)
 
 	// Shouldn't exist in map
 	if existsInMap == true {
@@ -133,7 +134,8 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	}
 
 	// Save 'processTestInstructionExecutionReversedResponseChannelData' in Map
-	processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid] = processTestInstructionExecutionReversedResponseMapData
+	//processTestInstructionExecutionReversedResponseChannelMap[processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid] = processTestInstructionExecutionReversedResponseMapData
+	saveToTestInstructionExecutionReversedResponseChannelMap(processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid, processTestInstructionExecutionReversedResponseMapData)
 
 	// Handle reversed response from Connector
 	var testInstructionExecutionReversedResponse *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReversedResponse
@@ -204,7 +206,8 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	}
 
 	// Remove message from Map
-	delete(processTestInstructionExecutionReversedResponseChannelMap, processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid)
+	//delete(processTestInstructionExecutionReversedResponseChannelMap, processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid)
+	deleteFromTestInstructionExecutionReversedResponseChannelMap(processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid)
 
 	return processTestInstructionExecutionResponse, nil
 

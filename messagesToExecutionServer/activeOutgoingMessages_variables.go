@@ -8,8 +8,9 @@ import (
 )
 
 type MessagesToExecutionServerObjectStruct struct {
-	Logger         *logrus.Logger
-	gcpAccessToken *oauth2.Token
+	Logger                               *logrus.Logger
+	gcpAccessToken                       *oauth2.Token
+	connectionToExecutionServerInitiated bool
 }
 
 // Variables used for contacting Fenix Execution Server
