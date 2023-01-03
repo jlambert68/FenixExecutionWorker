@@ -32,7 +32,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendAre
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer func() {
 		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-			"ID": "c5ba19bd-75ff-4366-818d-745d4d7f1a52",
+			"ID": "2c4fb00e-bcc0-4232-963e-df0c4d2f010d",
 		}).Error("Running Defer Cancel function")
 		cancel()
 	}()
