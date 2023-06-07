@@ -119,8 +119,8 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) generat
 			return nil, false, "Problem getting the token"
 		} else {
 			fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-				"ID":    "8b1ca089-0797-4ee6-bf9d-f9b06f606ae9",
-				"token": token,
+				"ID": "8b1ca089-0797-4ee6-bf9d-f9b06f606ae9",
+				//"token": token,
 			}).Debug("Got Bearer Token")
 		}
 
@@ -130,7 +130,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) generat
 
 	fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 		"ID": "cd124ca3-87bb-431b-9e7f-e044c52b4960",
-		"FenixExecutionWorkerObject.gcpAccessToken": fenixExecutionWorkerObject.gcpAccessToken,
+		//"FenixExecutionWorkerObject.gcpAccessToken": fenixExecutionWorkerObject.gcpAccessToken,
 	}).Debug("Will use Bearer Token")
 
 	// Add token to GrpcServer Request.
