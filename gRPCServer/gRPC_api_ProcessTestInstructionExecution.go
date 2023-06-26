@@ -61,12 +61,18 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 			// Only return the that no Connector has connected after last attempt
 			if connectorIsConnectedCheckAttemptCounter >= numberOfConnectorIsConnectedCheckAttempts {
 
+				// Create Error Code
+				var errorCodes []fenixExecutionWorkerGrpcApi.ErrorCodesEnum
+				var errorCode fenixExecutionWorkerGrpcApi.ErrorCodesEnum
+				errorCode = fenixExecutionWorkerGrpcApi.ErrorCodesEnum_ERROR_CONNECTOR_NOT_RESPONDING
+				errorCodes = append(errorCodes, errorCode)
+
 				// Generate response
 				processTestInstructionExecutionResponse = &fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionResponse{
 					AckNackResponse: &fenixExecutionWorkerGrpcApi.AckNackResponse{
 						AckNack:                      false,
 						Comments:                     fmt.Sprintf("Message couldn't be sent to Connector, due to no active Connector was found"),
-						ErrorCodes:                   nil,
+						ErrorCodes:                   errorCodes,
 						ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 					},
 					TestInstructionExecutionUuid:   processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
