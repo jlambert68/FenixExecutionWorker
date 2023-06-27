@@ -40,15 +40,35 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 
 		// We have an active connection to Connector
 		connectorHasConnected = true
+		connectorHasConnectedAtLeastOnce = true
+		connectorConnectionTime = time.Now()
 
 		for {
 			// Wait for incoming TestInstructionExecution from Execution Server
 			executionForwardChannelMessage := <-executionForwardChannel
 
+			s.logger.WithFields(logrus.Fields{
+				"id": "a58d5ccc-331a-4f18-ade4-7c5f6696ed43",
+			}).Debug("Incoming TestInstructionExecution from ExecutionServer")
+
 			testInstructionExecution := executionForwardChannelMessage.processTestInstructionExecutionReveredRequest
 
 			// If Connector stops responding then exit
 			if connectorHasConnected == false {
+
+				// Only send back response over response channel if it wasn't a 'keep alive' message
+				if testInstructionExecution.TestInstruction.TestInstructionName != "KeepAlive" {
+
+					// Create response message to be sent on response channel
+					executionResponseChannelMessage := executionResponseChannelStruct{
+						testInstructionExecutionIsSentToConnector: false,
+						err: errors.New("ExecutionWorker lost connection to Connector"),
+					}
+
+					// Send message back over response channel that message was failed to be sent to Connector
+					*executionForwardChannelMessage.executionResponseChannelReference <- executionResponseChannelMessage
+				}
+
 				done <- true //close(done)
 
 				return
@@ -175,6 +195,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 	<-done
 
 	connectorHasConnected = false
+	connectorConnectionTime = time.Now()
 
 	return err
 

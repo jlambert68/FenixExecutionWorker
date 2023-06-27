@@ -45,9 +45,9 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	sleepTimeBetweenConnectorIsConnectedCheckAttempts = []int{100, 200, 300, 300, 500, 500, 1000, 1000, 1000, 1000} // Total: 5.9 seconds
 
 	// Do multiple attempts to do gRPC-call to Execution Worker, when it fails
-	var numberOfConnectorIsConnectedCheckAttempts int
+	//var numberOfConnectorIsConnectedCheckAttempts int
 	var connectorIsConnectedCheckAttemptCounter int
-	numberOfConnectorIsConnectedCheckAttempts = len(sleepTimeBetweenConnectorIsConnectedCheckAttempts)
+	//numberOfConnectorIsConnectedCheckAttempts = len(sleepTimeBetweenConnectorIsConnectedCheckAttempts)
 	connectorIsConnectedCheckAttemptCounter = 0
 
 	for {
@@ -55,11 +55,44 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		// Add to counter for how many gRPC-call-attempts to Worker that have been done
 		connectorIsConnectedCheckAttemptCounter = connectorIsConnectedCheckAttemptCounter + 1
 
+		s.logger.WithFields(logrus.Fields{
+			"id": "23fb6d78-d4ce-4b39-8091-e9bfeb59f354",
+			"connectorIsConnectedCheckAttemptCounter": connectorIsConnectedCheckAttemptCounter,
+		}).Debug("Check if there are an active connection from a Connector")
+
+		// Wait up to 30 seconds, when there has been at least one connection from the Connector
+		if connectorHasConnectedAtLeastOnce == true {
+
+			for {
+
+				// Wait if there is no connection to Connector
+				if connectorHasConnected == false {
+					s.logger.WithFields(logrus.Fields{
+						"id": "1b949202-5ba1-49c5-b158-a0ecc33314e6",
+						"connectorIsConnectedCheckAttemptCounter": connectorIsConnectedCheckAttemptCounter,
+					}).Debug("Check if there are an active connection from a Connector")
+
+					// Wait before checking connection again
+					time.Sleep(time.Second * 5)
+
+					// Max wait time is 30 seconds
+					if time.Now().After(connectorConnectionTime.Add(30*time.Second)) == true {
+						break
+					}
+
+				} else {
+
+					break
+
+				}
+			}
+		}
+
 		// If there isn't an active connection to the Connector then  report that back
 		if connectorHasConnected == false {
 
 			// Only return the that no Connector has connected after last attempt
-			if connectorIsConnectedCheckAttemptCounter >= numberOfConnectorIsConnectedCheckAttempts {
+			if true { // Not used for now.... connectorIsConnectedCheckAttemptCounter >= numberOfConnectorIsConnectedCheckAttempts {
 
 				// Create Error Code
 				var errorCodes []fenixExecutionWorkerGrpcApi.ErrorCodesEnum
@@ -79,6 +112,10 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 					ExpectedExecutionDuration:      nil,
 					TestInstructionCanBeReExecuted: false,
 				}
+
+				s.logger.WithFields(logrus.Fields{
+					"id": "47763d5d-6c20-4515-8109-da9069756c51",
+				}).Error("No active connection from a Connector")
 
 				// Return Response to Execution Server
 				return processTestInstructionExecutionResponse, nil

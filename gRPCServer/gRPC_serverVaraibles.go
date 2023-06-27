@@ -36,6 +36,8 @@ type fenixExecutionWorkerConnectorGrpcServicesServer struct {
 
 // Used  by gRPC server that receives Connector-connections to inform gRPC-server that receives ExecutionServer-connections
 var connectorHasConnected bool
+var connectorHasConnectedAtLeastOnce bool
+var connectorConnectionTime time.Time
 
 // *******************************************************************************************
 // Channel used for forwarding TestInstructionExecutions to stream-server which then forwards it to the Connector
