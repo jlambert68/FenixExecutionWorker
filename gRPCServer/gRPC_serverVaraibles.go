@@ -38,6 +38,7 @@ type fenixExecutionWorkerConnectorGrpcServicesServer struct {
 var connectorHasConnected bool
 var connectorHasConnectedAtLeastOnce bool
 var connectorConnectionTime time.Time
+var connectorHasConnectSessionId string
 
 // *******************************************************************************************
 // Channel used for forwarding TestInstructionExecutions to stream-server which then forwards it to the Connector

@@ -3,6 +3,7 @@ package gRPCServer
 import (
 	"FenixExecutionWorker/common_config"
 	"errors"
+	uuidGenerator "github.com/google/uuid"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"time"
@@ -23,6 +24,9 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 	// Calling system
 	userId := "Execution Connector"
 
+	// local copy of 'connectorHasConnectSessionId'
+	var localCopyConnectorHasConnectSessionId string
+
 	// Check if Client is using correct proto files version
 	returnMessage := common_config.IsCallerUsingCorrectWorkerProtoFileVersion(userId, fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(emptyParameter.ProtoFileVersionUsedByClient))
 	if returnMessage != nil {
@@ -42,6 +46,8 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 		connectorHasConnected = true
 		connectorHasConnectedAtLeastOnce = true
 		connectorConnectionTime = time.Now()
+		connectorHasConnectSessionId = uuidGenerator.New().String()
+		localCopyConnectorHasConnectSessionId = connectorHasConnectSessionId
 
 		for {
 			// Wait for incoming TestInstructionExecution from Execution Server
@@ -77,8 +83,10 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 			err = streamServer.Send(testInstructionExecution)
 			if err != nil {
 
-				// We don't have an active connection to Connector
-				connectorHasConnected = false
+				// We don't have an active connection to Connector, but only switch of if local copy is the same as 'connectorHasConnectSessionId'
+				if localCopyConnectorHasConnectSessionId == connectorHasConnectSessionId {
+					connectorHasConnected = false
+				}
 
 				s.logger.WithFields(logrus.Fields{
 					"id":                       "70ab1dcb-0be3-49b6-b49a-694bab529ed4",
@@ -174,7 +182,10 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 				time.Sleep(time.Second * 30)
 				if messageWasPickedFromExecutionForwardChannel == false {
 					// Stop in channel
-					connectorHasConnected = false
+					// We don't have an active connection to Connector, but only switch of if local copy is the same as 'connectorHasConnectSessionId'
+					if localCopyConnectorHasConnectSessionId == connectorHasConnectSessionId {
+						connectorHasConnected = false
+					}
 					s.logger.WithFields(logrus.Fields{
 						"id": "ad24ded4-4218-4ddd-93bb-2b8ec1a1a046",
 					}).Debug("No answer regarding Keep Alive-message, Connector is not responding")
@@ -194,7 +205,10 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 	// Server stopped so wait for new connection
 	<-done
 
-	connectorHasConnected = false
+	// We don't have an active connection to Connector, but only switch of if local copy is the same as 'connectorHasConnectSessionId'
+	if localCopyConnectorHasConnectSessionId == connectorHasConnectSessionId {
+		connectorHasConnected = false
+	}
 	connectorConnectionTime = time.Now()
 
 	return err
