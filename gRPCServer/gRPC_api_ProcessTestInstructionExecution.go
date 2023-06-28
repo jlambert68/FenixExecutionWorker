@@ -58,7 +58,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		s.logger.WithFields(logrus.Fields{
 			"id": "23fb6d78-d4ce-4b39-8091-e9bfeb59f354",
 			"connectorIsConnectedCheckAttemptCounter": connectorIsConnectedCheckAttemptCounter,
-		}).Debug("Check if there are an active connection from a Connector")
+		}).Debug("Check if there is an active connection from a Connector")
 
 		// Wait up to 30 seconds, when there has been at least one connection from the Connector
 		if connectorHasConnectedAtLeastOnce == true {
@@ -70,13 +70,22 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 					s.logger.WithFields(logrus.Fields{
 						"id": "1b949202-5ba1-49c5-b158-a0ecc33314e6",
 						"connectorIsConnectedCheckAttemptCounter": connectorIsConnectedCheckAttemptCounter,
-					}).Debug("Check if there are an active connection from a Connector")
+					}).Debug("Connector has connected at least one time so do multiple checks if there is an active connection from a Connector")
 
 					// Wait before checking connection again
 					time.Sleep(time.Second * 5)
 
+					s.logger.WithFields(logrus.Fields{
+						"id": "2cff6ae7-438e-4585-8601-3899b9610fe8",
+						"connectorIsConnectedCheckAttemptCounter": connectorIsConnectedCheckAttemptCounter,
+					}).Debug("Slept 5 seconds")
+
 					// Max wait time is 30 seconds
 					if time.Now().After(connectorConnectionTime.Add(30*time.Second)) == true {
+						s.logger.WithFields(logrus.Fields{
+							"id": "2d07fa75-672e-4f3d-b61d-5cc1859c1c20",
+							"connectorIsConnectedCheckAttemptCounter": connectorIsConnectedCheckAttemptCounter,
+						}).Debug("No connector after 30 seconds, so exiting")
 						break
 					}
 
