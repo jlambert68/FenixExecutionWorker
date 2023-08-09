@@ -3,11 +3,13 @@ package outgoingPubSubMessages
 import (
 	"FenixExecutionWorker/common_config"
 	"FenixExecutionWorker/gcp"
-	"context"
-	"fmt"
-	"io"
-
 	"cloud.google.com/go/pubsub"
+	"context"
+	"crypto/tls"
+	"fmt"
+	"google.golang.org/api/option"
+	"io"
+	"net/http"
 )
 
 func Publish(w io.Writer, msg string) (bool, string, error) {
@@ -26,7 +28,35 @@ func Publish(w io.Writer, msg string) (bool, string, error) {
 		return returnMessageAckNack, returnMessageString, nil
 	}
 
-	client, err := pubsub.NewClient(ctx, projectID)
+	//When running on GCP then use credential otherwise not
+	//var opts []grpc.DialOption
+
+	var httpClient *http.Client
+	if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
+		//var creds credentials.TransportCredentials
+		//creds = credentials.NewTLS(&tls.Config{
+		//	InsecureSkipVerify: true,
+		//})
+
+		//opts = []grpc.DialOption{
+		//	grpc.WithTransportCredentials(creds),
+		//}
+
+		tlsConfig := &tls.Config{
+			InsecureSkipVerify: true, // Insecure: skip certificate verification
+		}
+
+		transport := &http.Transport{
+			TLSClientConfig: tlsConfig,
+		}
+
+		httpClient = &http.Client{
+			Transport: transport,
+			//Timeout:   10 * time.Second,
+		}
+	}
+
+	client, err := pubsub.NewClient(ctx, projectID, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return false, "", fmt.Errorf("pubsub: NewClient: %w", err)
 	}
