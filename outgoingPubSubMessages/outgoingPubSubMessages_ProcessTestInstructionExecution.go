@@ -8,8 +8,9 @@ import (
 	"crypto/tls"
 	"fmt"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"io"
-	"net/http"
 )
 
 func Publish(w io.Writer, msg string) (bool, string, error) {
@@ -29,9 +30,9 @@ func Publish(w io.Writer, msg string) (bool, string, error) {
 	}
 
 	//When running on GCP then use credential otherwise not
-	//var opts []grpc.DialOption
+	var opts []grpc.DialOption
 
-	var httpClient *http.Client
+	//var httpClient *http.Client
 	if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
 		//var creds credentials.TransportCredentials
 		//creds = credentials.NewTLS(&tls.Config{
@@ -42,21 +43,31 @@ func Publish(w io.Writer, msg string) (bool, string, error) {
 		//	grpc.WithTransportCredentials(creds),
 		//}
 
-		tlsConfig := &tls.Config{
-			InsecureSkipVerify: true, // Insecure: skip certificate verification
-		}
+		/*
+			tlsConfig := &tls.Config{
+				InsecureSkipVerify: true, // Insecure: skip certificate verification
+			}
 
-		transport := &http.Transport{
-			TLSClientConfig: tlsConfig,
-		}
+			transport := &http.Transport{
+				TLSClientConfig: tlsConfig,
+			}
 
-		httpClient = &http.Client{
-			Transport: transport,
-			//Timeout:   10 * time.Second,
+			httpClient = &http.Client{
+				Transport: transport,
+				//Timeout:   10 * time.Second,
+			}
+		*/
+
+		creds := credentials.NewTLS(&tls.Config{
+			InsecureSkipVerify: true,
+		})
+
+		opts = []grpc.DialOption{
+			grpc.WithTransportCredentials(creds),
 		}
 	}
 
-	client, err := pubsub.NewClient(ctx, projectID, option.WithHTTPClient(httpClient))
+	client, err := pubsub.NewClient(ctx, projectID, option.WithGRPCDialOption(opts[0]))
 	if err != nil {
 		return false, "", fmt.Errorf("pubsub: NewClient: %w", err)
 	}
