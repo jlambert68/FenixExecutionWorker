@@ -21,6 +21,7 @@ const (
 
 // Address to Fenix Execution Server & Execution Worker, will have their values from Environment variables at startup
 var (
+	ApplicationRunTimeUuid string
 	// Worker
 	ExecutionWorkerServerPort int
 
@@ -28,4 +29,9 @@ var (
 	FenixExecutionServerAddress       string
 	FenixExecutionServerPort          int
 	FenixExecutionServerAddressToDial string
+
+	GcpProject string
+
+	AuthClientId     string
+	AuthClientSecret string
 )

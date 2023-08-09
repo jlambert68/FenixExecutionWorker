@@ -37,6 +37,11 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 			TestInstructionCanBeReExecuted: false,
 		}
 
+		s.logger.WithFields(logrus.Fields{
+			"id":            "de3c6e57-f1d1-4a51-9f31-56d7ded167f9",
+			"returnMessage": returnMessage,
+		}).Debug("Client using wrong proto-file version")
+
 		return processTestInstructionExecutionResponse, nil
 	}
 

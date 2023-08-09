@@ -2,6 +2,7 @@ package main
 
 import (
 	"FenixExecutionWorker/common_config"
+	"FenixExecutionWorker/gcp"
 	"github.com/sirupsen/logrus"
 	"log"
 	"os"
@@ -52,5 +53,7 @@ func (fenixExecutionWorkerObject *fenixExecutionWorkerObjectStruct) InitLogger(f
 
 	// Should only be done from init functions
 	//grpclog.SetLoggerV2(grpclog.NewLoggerV2(logger.Out, logger.Out, logger.Out))
+
+	gcp.Gcp.SetLogger(fenixExecutionWorkerObject.logger)
 
 }
