@@ -26,7 +26,7 @@ type GenerateTokenTargetType int
 // Constants used to define what Token should be used for
 const (
 	GenerateTokenForGrpcTowardsExecutionServer GenerateTokenTargetType = iota
-	GenerateTokenForPuSub
+	GenerateTokenForPubSub
 )
 
 func (gcp *GcpObjectStruct) GenerateGCPAccessToken(ctx context.Context, tokenTarget GenerateTokenTargetType) (appendedCtx context.Context, returnAckNack bool, returnMessage string) {
@@ -48,7 +48,7 @@ func (gcp *GcpObjectStruct) GenerateGCPAccessToken(ctx context.Context, tokenTar
 			appendedCtx, returnAckNack, returnMessage = gcp.generateGCPAccessToken(ctx)
 		}
 
-	case GenerateTokenForPuSub:
+	case GenerateTokenForPubSub:
 		// Only use Authorized used when running locally and ExecutionServer is in GCP
 		if common_config.ExecutionLocationForWorker == common_config.LocalhostNoDocker {
 
@@ -151,7 +151,7 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 			}).Debug("Got Bearer Token")
 		}
 
-		gcp.gcpAccessTokenForServiceAccounts = token
+		gcp.gcpAccessTokenForServiceAccountsPubSub = token
 
 	}
 
@@ -313,7 +313,7 @@ func (gcp *GcpObjectStruct) GenerateGCPAccessTokenForAuthorizedUserPubSub(ctx co
 			common_config.AuthClientId,
 			common_config.AuthClientSecret,
 			"http://localhost:3000/auth/google/callback",
-			"email", "profile"),
+			"email", "https://www.googleapis.com/auth/pubsub"),
 	)
 
 	router := pat.New()

@@ -50,7 +50,7 @@ func fenixExecutionWorkerMain() {
 	// Initiate Logger for gRPC-server
 	FenixExecutionWorkerObject.GrpcServer.InitiateLogger(FenixExecutionWorkerObject.logger)
 
-	msg := "Hello World"
+	msg := "Hello World2"
 	result, returnMessageString, err := outgoingPubSubMessages.Publish(os.Stdout, msg)
 	if err != nil {
 		log.Fatalf("Error: %v", err)

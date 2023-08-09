@@ -18,70 +18,56 @@ func Publish(w io.Writer, msg string) (bool, string, error) {
 	topicID := "testinstruction-execution" //"projects/mycloud-run-project/topics/testinstruction-execution"
 	// msg := "Hello World"
 
+	var pubSubClient *pubsub.Client
+	var err error
+	var opts []grpc.DialOption
+
 	ctx := context.Background()
 
 	// Add Access token
 	var returnMessageAckNack bool
 	var returnMessageString string
 
-	ctx, returnMessageAckNack, returnMessageString = gcp.Gcp.GenerateGCPAccessToken(ctx, gcp.GenerateTokenForPuSub)
+	ctx, returnMessageAckNack, returnMessageString = gcp.Gcp.GenerateGCPAccessToken(ctx, gcp.GenerateTokenForPubSub)
 	if returnMessageAckNack == false {
 		return returnMessageAckNack, returnMessageString, nil
 	}
 
 	//When running on GCP then use credential otherwise not
-	var opts []grpc.DialOption
+	if true { //common_config.ExecutionLocationForWorker == common_config.GCP {
 
-	//var httpClient *http.Client
-	if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
-		//var creds credentials.TransportCredentials
-		//creds = credentials.NewTLS(&tls.Config{
-		//	InsecureSkipVerify: true,
-		//})
-
-		//opts = []grpc.DialOption{
-		//	grpc.WithTransportCredentials(creds),
-		//}
-
-		/*
-			tlsConfig := &tls.Config{
-				InsecureSkipVerify: true, // Insecure: skip certificate verification
-			}
-
-			transport := &http.Transport{
-				TLSClientConfig: tlsConfig,
-			}
-
-			httpClient = &http.Client{
-				Transport: transport,
-				//Timeout:   10 * time.Second,
-			}
-		*/
-
-		creds := credentials.NewTLS(&tls.Config{
+		var creds credentials.TransportCredentials
+		creds = credentials.NewTLS(&tls.Config{
 			InsecureSkipVerify: true,
 		})
 
 		opts = []grpc.DialOption{
 			grpc.WithTransportCredentials(creds),
 		}
+
+		pubSubClient, err = pubsub.NewClient(ctx, projectID, option.WithGRPCDialOption(opts[0]))
+
+	} else {
+
+		pubSubClient, err = pubsub.NewClient(ctx, projectID)
 	}
 
-	client, err := pubsub.NewClient(ctx, projectID, option.WithGRPCDialOption(opts[0]))
 	if err != nil {
 		return false, "", fmt.Errorf("pubsub: NewClient: %w", err)
 	}
-	defer client.Close()
+	defer pubSubClient.Close()
 
-	t := client.Topic(topicID)
-	result := t.Publish(ctx, &pubsub.Message{
+	var pubSubTopic *pubsub.Topic
+	var pubSubResult *pubsub.PublishResult
+	pubSubTopic = pubSubClient.Topic(topicID)
+	pubSubResult = pubSubTopic.Publish(ctx, &pubsub.Message{
 		Data: []byte(msg),
 	})
-	// Block until the result is returned and a server-generated
+	// Block until the pubSubResult is returned and a server-generated
 	// ID is returned for the published message.
-	id, err := result.Get(ctx)
+	id, err := pubSubResult.Get(ctx)
 	if err != nil {
-		return false, "", fmt.Errorf("pubsub: result.Get: %w", err)
+		return false, "", fmt.Errorf("pubsub: pubSubResult.Get: %w", err)
 	}
 	fmt.Fprintf(w, "Published a message; msg ID: %v\n", id)
 	return true, "", nil
