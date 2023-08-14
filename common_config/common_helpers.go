@@ -3,6 +3,7 @@ package common_config
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
 	"strconv"
@@ -109,3 +110,9 @@ func GetHighestFenixTestDataProtoFileVersion() int32 {
 }
 
 */
+
+// InitiateLogger - Initiate local logger object
+func InitiateLogger(logger *logrus.Logger) {
+
+	Logger = logger
+}

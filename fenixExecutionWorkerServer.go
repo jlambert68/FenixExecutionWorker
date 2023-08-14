@@ -8,7 +8,6 @@ import (
 	uuidGenerator "github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"log"
-	"os"
 )
 
 // Used for only process cleanup once
@@ -50,8 +49,11 @@ func fenixExecutionWorkerMain() {
 	// Initiate Logger for gRPC-server
 	FenixExecutionWorkerObject.GrpcServer.InitiateLogger(FenixExecutionWorkerObject.logger)
 
+	// Initiate shared Logger
+	common_config.InitiateLogger(FenixExecutionWorkerObject.logger)
+
 	msg := "Hello World2"
-	result, returnMessageString, err := outgoingPubSubMessages.Publish(os.Stdout, msg)
+	result, returnMessageString, err := outgoingPubSubMessages.Publish(msg)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}

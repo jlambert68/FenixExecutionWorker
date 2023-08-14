@@ -34,4 +34,7 @@ var (
 
 	AuthClientId     string
 	AuthClientSecret string
+
+	UsePubSubWhenSendingTestInstructionExecutions bool
+	TestInstructionExecutionPubSubTopic           string
 )

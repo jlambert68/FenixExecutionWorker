@@ -313,7 +313,8 @@ func (gcp *GcpObjectStruct) GenerateGCPAccessTokenForAuthorizedUserPubSub(ctx co
 			common_config.AuthClientId,
 			common_config.AuthClientSecret,
 			"http://localhost:3000/auth/google/callback",
-			"email", "https://www.googleapis.com/auth/pubsub"),
+			"email",
+			"https://www.googleapis.com/auth/cloud-platform"), //"https://www.googleapis.com/auth/pubsub"),
 	)
 
 	router := pat.New()

@@ -117,4 +117,14 @@ func init() {
 	// Extract the GCP-project
 	common_config.GcpProject = mustGetenv("GcpProject")
 
+	// Should PubSub be used for sending 'TestInstructionExecutions' to Connector
+	common_config.UsePubSubWhenSendingTestInstructionExecutions, err = strconv.ParseBool(mustGetenv("UsePubSubWhenSendingTestInstructionExecutions"))
+	if err != nil {
+		fmt.Println("Couldn't convert environment variable 'UsePubSubWhenSendingTestInstructionExecutions' to a boolean, error: ", err)
+		os.Exit(0)
+	}
+
+	// Extract PubSub-Topic for where to send 'TestInstructionExecutions'
+	common_config.TestInstructionExecutionPubSubTopic = mustGetenv("TestInstructionExecutionPubSubTopic")
+
 }
