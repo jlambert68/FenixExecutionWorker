@@ -36,7 +36,7 @@ func Publish(msg string) (returnMessageAckNack bool, returnMessageString string,
 
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", common_config.LocalServiceAccountPath)
 	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "")
-	if true {
+	if len(common_config.LocalServiceAccountPath) != 0 {
 		//ctx = context.Background()
 		pubSubClient, err = pubsub.NewClient(ctx, projectID)
 
@@ -131,6 +131,8 @@ func Publish(msg string) (returnMessageAckNack bool, returnMessageString string,
 		common_config.Logger.WithFields(logrus.Fields{
 			"ID": "dc8bb67a-2caf-4a46-8a5c-598e253515c5",
 		}).Error(fmt.Errorf("pubsub: pubSubResult.Get: %w", err))
+
+		return false, "", err
 
 	}
 
