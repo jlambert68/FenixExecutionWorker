@@ -37,4 +37,5 @@ var (
 
 	UsePubSubWhenSendingTestInstructionExecutions bool
 	TestInstructionExecutionPubSubTopic           string
+	LocalServiceAccountPath                       string
 )

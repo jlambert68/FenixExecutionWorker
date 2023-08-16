@@ -34,7 +34,7 @@ func Publish(msg string) (returnMessageAckNack bool, returnMessageString string,
 		return returnMessageAckNack, returnMessageString, nil
 	}
 
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "/home/jlambert/Downloads/mycloud-run-project-a35e47ac3dc3.json")
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", common_config.LocalServiceAccountPath)
 	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "")
 	if true {
 		//ctx = context.Background()

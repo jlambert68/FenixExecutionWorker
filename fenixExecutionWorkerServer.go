@@ -3,11 +3,9 @@ package main
 import (
 	"FenixExecutionWorker/common_config"
 	"FenixExecutionWorker/gRPCServer"
-	"FenixExecutionWorker/outgoingPubSubMessages"
 	"fmt"
 	uuidGenerator "github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"log"
 )
 
 // Used for only process cleanup once
@@ -52,17 +50,20 @@ func fenixExecutionWorkerMain() {
 	// Initiate shared Logger
 	common_config.InitiateLogger(FenixExecutionWorkerObject.logger)
 
-	msg := "Hello World2"
-	result, returnMessageString, err := outgoingPubSubMessages.Publish(msg)
-	if err != nil {
-		log.Fatalf("Error: %v", err)
-	}
+	/*
+		msg := "Hello World2"
+		result, returnMessageString, err := outgoingPubSubMessages.Publish(msg)
+		if err != nil {
+			log.Fatalf("Error: %v", err)
+		}
 
-	if result {
-		fmt.Printf("Message published successfully: %s\n", returnMessageString)
-	} else {
-		fmt.Printf("Message publish failed: %s\n", returnMessageString)
-	}
+		if result {
+			fmt.Printf("Message published successfully: %s\n", returnMessageString)
+		} else {
+			fmt.Printf("Message publish failed: %s\n", returnMessageString)
+		}
+
+	*/
 
 	// Start Backend GrpcServer-server
 	FenixExecutionWorkerObject.GrpcServer.InitGrpcServer(FenixExecutionWorkerObject.logger)

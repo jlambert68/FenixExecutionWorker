@@ -13,7 +13,7 @@ require (
 	github.com/toqueteos/webbrowser v1.2.0
 	golang.org/x/net v0.14.0
 	golang.org/x/oauth2 v0.11.0
-	google.golang.org/api v0.136.0
+	google.golang.org/api v0.137.0
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
 )
@@ -22,9 +22,8 @@ require (
 	cloud.google.com/go v0.110.6 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.1 // indirect
-	cloud.google.com/go/kms v1.15.0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/s2a-go v0.1.4 // indirect
+	github.com/google/s2a-go v0.1.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
