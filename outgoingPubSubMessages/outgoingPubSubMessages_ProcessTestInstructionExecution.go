@@ -129,7 +129,8 @@ func Publish(msg string) (returnMessageAckNack bool, returnMessageString string,
 	if err != nil {
 
 		common_config.Logger.WithFields(logrus.Fields{
-			"ID": "dc8bb67a-2caf-4a46-8a5c-598e253515c5",
+			"ID":  "dc8bb67a-2caf-4a46-8a5c-598e253515c5",
+			"msg": msg,
 		}).Error(fmt.Errorf("pubsub: pubSubResult.Get: %w", err))
 
 		return false, "", err
