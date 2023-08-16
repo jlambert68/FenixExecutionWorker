@@ -124,5 +124,9 @@ func init() {
 
 	// Extract local path to Service-Account file
 	common_config.LocalServiceAccountPath = mustGetenv("LocalServiceAccountPath")
+	// The only way have an OK space is to replace an existing character
+	if common_config.LocalServiceAccountPath == "#" {
+		common_config.LocalServiceAccountPath = ""
+	}
 
 }
