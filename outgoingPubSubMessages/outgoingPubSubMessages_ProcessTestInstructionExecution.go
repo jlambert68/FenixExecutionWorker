@@ -14,12 +14,21 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"os"
+	"strings"
 )
 
 func Publish(msg string) (returnMessageAckNack bool, returnMessageString string, err error) {
 	projectID := common_config.GcpProject
 	topicID := "SubCustody-ProcessTestInstructionExecutionRequest" //"projects/mycloud-run-project/topics/testinstruction-execution"
 	// msg := "Hello World"
+
+	// Remove any unwanted characters
+	// Remove '\n'
+	var cleanedMessage string
+	cleanedMessage = strings.Replace(msg, "\n", "", -1)
+
+	// Replace '\"' with '"'
+	cleanedMessage = strings.ReplaceAll(cleanedMessage, "\\\"", "\"")
 
 	var pubSubClient *pubsub.Client
 	var opts []grpc.DialOption
@@ -121,7 +130,7 @@ func Publish(msg string) (returnMessageAckNack bool, returnMessageString string,
 	var pubSubResult *pubsub.PublishResult
 	pubSubTopic = pubSubClient.Topic(topicID)
 	pubSubResult = pubSubTopic.Publish(ctx, &pubsub.Message{
-		Data: []byte(msg),
+		Data: []byte(cleanedMessage),
 	})
 	// Block until the pubSubResult is returned and a server-generated
 	// ID is returned for the published message.

@@ -51,7 +51,7 @@ func fenixExecutionWorkerMain() {
 	common_config.InitiateLogger(FenixExecutionWorkerObject.logger)
 
 	/*
-		msg := "Hello World2"
+		msg := "{\n \"ProtoFileVersionUsedByClient\": \"VERSION_0_3\",\n \"TestInstruction\": {\n \"TestInstructionExecutionUuid\": \"e1865111-88a8-4db5-b408-65be20d85a1f\",\n \"TestInstructionUuid\": \"26d38886-c112-48ef-a20f-4da8fb9a5ccb\",\n \"TestInstructionName\": \"TestCaseSetUp\",\n \"MinorVersionNumber\": 1,\n \"TestInstructionAttributes\": [\n {\n \"TestInstructionAttributeUuid\": \"f4682904-8f60-447c-b851-e713f2b4a03d\",\n \"TestInstructionAttributeName\": \"ExpectedToBePassed\",\n \"AttributeValueAsString\": \"true\",\n \"AttributeValueUuid\": \"f4682904-8f60-447c-b851-e713f2b4a03d\"\n }\n ]\n },\n \"TestData\": {\n \"TestDataSetUuid\": \"8e9671bd-5ded-485a-a2e6-cf8a44a63109\",\n \"ManualOverrideForTestData\": [\n {\n \"TestDataSetAttributeUuid\": \"f4682904-8f60-447c-b851-e713f2b4a03d\",\n \"TestDataSetAttributeName\": \"ExpectedToBePassed\",\n \"TestDataSetAttributeValue\": \"f4682904-8f60-447c-b851-e713f2b4a03d\"\n }\n ]\n }\n}"
 		result, returnMessageString, err := outgoingPubSubMessages.Publish(msg)
 		if err != nil {
 			log.Fatalf("Error: %v", err)
@@ -62,7 +62,6 @@ func fenixExecutionWorkerMain() {
 		} else {
 			fmt.Printf("Message publish failed: %s\n", returnMessageString)
 		}
-
 	*/
 
 	// Start Backend GrpcServer-server
