@@ -44,6 +44,35 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	var processTestInstructionExecutionRequestAsJsonString string
 	processTestInstructionExecutionRequestAsJsonString = protojson.Format(processTestInstructionExecutionPubSubRequest)
 
+	// Convert PubSub-message back into proto-message
+	var processTestInstructionExecutionPubSubRequest2 *fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionPubSubRequest
+	err2 := protojson.Unmarshal([]byte(processTestInstructionExecutionRequestAsJsonString), processTestInstructionExecutionPubSubRequest2)
+	if err2 != nil {
+		common_config.Logger.WithFields(logrus.Fields{
+			"Id":    "5be52325-5862-45f4-8ef8-ced518e11c8c",
+			"Error": err2,
+			"processTestInstructionExecutionRequestAsJsonString": processTestInstructionExecutionRequestAsJsonString,
+			"processTestInstructionExecutionPubSubRequest":       processTestInstructionExecutionPubSubRequest,
+			"processTestInstructionExecutionPubSubRequest2":      processTestInstructionExecutionPubSubRequest2,
+		}).Error("Something went wrong when converting 'PubSub-message into proto-message")
+
+		returnMessage = &fenixExecutionWorkerGrpcApi.AckNackResponse{
+			AckNack:    false,
+			Comments:   err2.Error(),
+			ErrorCodes: nil,
+			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(
+				common_config.GetHighestExecutionWorkerProtoFileVersion()),
+		}
+
+		return returnMessage, nil
+	}
+	common_config.Logger.WithFields(logrus.Fields{
+		"Id": "01a55d6b-311d-4bdd-8284-f2f4ac8e582a",
+		"processTestInstructionExecutionRequestAsJsonString": processTestInstructionExecutionRequestAsJsonString,
+		"processTestInstructionExecutionPubSubRequest":       processTestInstructionExecutionPubSubRequest,
+		"processTestInstructionExecutionPubSubRequest2":      processTestInstructionExecutionPubSubRequest2,
+	}).Info("Message before and after json-convert")
+
 	var (
 		returnMessageAckNack bool
 		returnMessageString  string

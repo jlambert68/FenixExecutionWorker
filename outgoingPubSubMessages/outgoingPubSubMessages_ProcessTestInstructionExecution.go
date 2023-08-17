@@ -13,13 +13,12 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"os"
 	"strings"
 )
 
 func Publish(msg string) (returnMessageAckNack bool, returnMessageString string, err error) {
 	projectID := common_config.GcpProject
-	topicID := "SubCustody-ProcessTestInstructionExecutionRequest" //"projects/mycloud-run-project/topics/testinstruction-execution"
+	topicID := "SubCustody-ProcessTestInstructionExecutionRequest"
 	// msg := "Hello World"
 
 	// Remove any unwanted characters
@@ -43,8 +42,6 @@ func Publish(msg string) (returnMessageAckNack bool, returnMessageString string,
 		return returnMessageAckNack, returnMessageString, nil
 	}
 
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", common_config.LocalServiceAccountPath)
-	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "")
 	if len(common_config.LocalServiceAccountPath) != 0 {
 		//ctx = context.Background()
 		pubSubClient, err = pubsub.NewClient(ctx, projectID)

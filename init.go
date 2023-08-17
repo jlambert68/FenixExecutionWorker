@@ -129,4 +129,7 @@ func init() {
 		common_config.LocalServiceAccountPath = ""
 	}
 
+	// Set the environment varaible that Google-client-libraries look for
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", common_config.LocalServiceAccountPath)
+
 }
