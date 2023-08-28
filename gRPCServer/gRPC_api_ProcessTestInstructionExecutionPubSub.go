@@ -106,5 +106,4 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 	return returnMessage, nil
 
-	return returnMessage, nil
 }

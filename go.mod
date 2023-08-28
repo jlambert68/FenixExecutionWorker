@@ -4,16 +4,16 @@ go 1.18
 
 require (
 	cloud.google.com/go/pubsub v1.33.0
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/gorilla/pat v1.0.1
 	github.com/gorilla/sessions v1.2.1
-	github.com/jlambert68/FenixGrpcApi v0.0.0-20230814111347-2671b088003b
+	github.com/jlambert68/FenixGrpcApi v0.0.0-20230818091339-29c1d9faa76b
 	github.com/markbates/goth v1.77.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/toqueteos/webbrowser v1.2.0
 	golang.org/x/net v0.14.0
 	golang.org/x/oauth2 v0.11.0
-	google.golang.org/api v0.137.0
+	google.golang.org/api v0.138.0
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
 )
