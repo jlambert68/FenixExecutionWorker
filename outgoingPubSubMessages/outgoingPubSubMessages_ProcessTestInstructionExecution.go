@@ -7,9 +7,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/oauth2"
-	"google.golang.org/api/idtoken"
-	"google.golang.org/api/impersonate"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -41,86 +38,119 @@ func Publish(msg string) (returnMessageAckNack bool, returnMessageString string,
 	if returnMessageAckNack == false {
 		return returnMessageAckNack, returnMessageString, nil
 	}
+	/*
+		if len(common_config.LocalServiceAccountPath) != 0 {
+			//ctx = context.Background()
+			pubSubClient, err = pubsub.NewClient(ctx, projectID)
+
+		} else {
+
+			//When running on GCP then use credential otherwise not
+			if common_config.ExecutionLocationForWorker == common_config.GCP {
+
+				var creds credentials.TransportCredentials
+				creds = credentials.NewTLS(&tls.Config{
+					InsecureSkipVerify: true,
+				})
+
+				opts = []grpc.DialOption{
+					grpc.WithTransportCredentials(creds),
+				}
+
+				pubSubClient, err = pubsub.NewClient(ctx, projectID, option.WithGRPCDialOption(opts[0]))
+
+			} else {
+
+				//ctx := context.Background()
+
+				// Base credentials sourced from ADC or provided client options.
+				var ts oauth2.TokenSource
+				ts, err = impersonate.CredentialsTokenSource(ctx, impersonate.CredentialsConfig{
+					TargetPrincipal: "fenix-cloudrun-runner@mycloud-run-project.iam.gserviceaccount.com",
+					Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+					//Lifetime:        time.Duration(time.Minute * 60),
+					// Optionally supply delegates.
+					//Delegates: []string{"bar@project-id.iam.gserviceaccount.com"},
+				})
+				if err != nil {
+
+					common_config.Logger.WithFields(logrus.Fields{
+						"ID": "00dc111a-52e7-4ed9-af1e-b5fa2af6c669",
+						"ts": ts,
+					}).Error(fmt.Errorf("impersonate.CredentialsTokenSource(ctx: %w", err))
+
+					return false, "", err
+
+				}
+
+				var serviceAccountKeyJson = []byte(`{XXX}`)
+
+				//ctx = context.Background()
+				tokenSource, err := idtoken.NewTokenSource(ctx,
+					"https://www.googleapis.com/auth/cloud-platform",                                              //"https://www.googleapis.com/auth/pubsub",
+					idtoken.WithCredentialsFile("/home/jlambert/Downloads/mycloud-run-project-a35e47ac3dc3.json")) // WithCredentialsJSON(serviceAccountKeyJson))
+				if err != nil {
+					common_config.Logger.WithFields(logrus.Fields{
+						"ID": "44930ec9-7083-4d42-b721-be6ed938360a",
+					}).Error(fmt.Errorf("tokenSource, err := idtoken.NewTokenSource(ctx,: %w", err))
+
+					return false, "", err
+
+				}
+
+				_, err = tokenSource.Token()
+				if err != nil {
+					common_config.Logger.WithFields(logrus.Fields{
+						"ID": "65d121ef-7f89-4a19-a4a2-c3d9757daccf",
+					}).Error(fmt.Errorf("tokenSource.Token(): %w", err))
+
+					return false, "", err
+				}
+				//fmt.Println(token)
+				//ctx = context.Background()
+
+				//appendedCtx := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token.AccessToken)
+				//pubSubClient, err = pubsub.NewClient(appendedCtx, projectID) //, option.WithTokenSource(tokenSource))
+				pubSubClient, err = pubsub.NewClient(ctx, projectID, option.WithCredentialsJSON(serviceAccountKeyJson)) //.WithTokenSource(tokenSource))
+			}
+		}
+	*/
 
 	if len(common_config.LocalServiceAccountPath) != 0 {
 		//ctx = context.Background()
 		pubSubClient, err = pubsub.NewClient(ctx, projectID)
-
 	} else {
 
-		//When running on GCP then use credential otherwise not
-		if common_config.ExecutionLocationForWorker == common_config.GCP {
+	}
+	//When running on GCP then use credential otherwise not
+	if true { //common_config.ExecutionLocationForWorker == common_config.GCP {
 
-			var creds credentials.TransportCredentials
-			creds = credentials.NewTLS(&tls.Config{
-				InsecureSkipVerify: true,
-			})
+		var creds credentials.TransportCredentials
+		creds = credentials.NewTLS(&tls.Config{
+			InsecureSkipVerify: true,
+		})
 
-			opts = []grpc.DialOption{
-				grpc.WithTransportCredentials(creds),
-			}
-
-			pubSubClient, err = pubsub.NewClient(ctx, projectID, option.WithGRPCDialOption(opts[0]))
-
-		} else {
-
-			//ctx := context.Background()
-
-			// Base credentials sourced from ADC or provided client options.
-			var ts oauth2.TokenSource
-			ts, err = impersonate.CredentialsTokenSource(ctx, impersonate.CredentialsConfig{
-				TargetPrincipal: "fenix-cloudrun-runner@mycloud-run-project.iam.gserviceaccount.com",
-				Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
-				//Lifetime:        time.Duration(time.Minute * 60),
-				// Optionally supply delegates.
-				//Delegates: []string{"bar@project-id.iam.gserviceaccount.com"},
-			})
-			if err != nil {
-
-				common_config.Logger.WithFields(logrus.Fields{
-					"ID": "00dc111a-52e7-4ed9-af1e-b5fa2af6c669",
-					"ts": ts,
-				}).Error(fmt.Errorf("impersonate.CredentialsTokenSource(ctx: %w", err))
-
-				return false, "", err
-
-			}
-
-			var serviceAccountKeyJson = []byte(`{XXX}`)
-
-			//ctx = context.Background()
-			tokenSource, err := idtoken.NewTokenSource(ctx,
-				"https://www.googleapis.com/auth/cloud-platform",                                              //"https://www.googleapis.com/auth/pubsub",
-				idtoken.WithCredentialsFile("/home/jlambert/Downloads/mycloud-run-project-a35e47ac3dc3.json")) // WithCredentialsJSON(serviceAccountKeyJson))
-			if err != nil {
-				common_config.Logger.WithFields(logrus.Fields{
-					"ID": "44930ec9-7083-4d42-b721-be6ed938360a",
-				}).Error(fmt.Errorf("tokenSource, err := idtoken.NewTokenSource(ctx,: %w", err))
-
-				return false, "", err
-
-			}
-
-			_, err = tokenSource.Token()
-			if err != nil {
-				common_config.Logger.WithFields(logrus.Fields{
-					"ID": "65d121ef-7f89-4a19-a4a2-c3d9757daccf",
-				}).Error(fmt.Errorf("tokenSource.Token(): %w", err))
-
-				return false, "", err
-			}
-			//fmt.Println(token)
-			//ctx = context.Background()
-
-			//appendedCtx := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token.AccessToken)
-			//pubSubClient, err = pubsub.NewClient(appendedCtx, projectID) //, option.WithTokenSource(tokenSource))
-			pubSubClient, err = pubsub.NewClient(ctx, projectID, option.WithCredentialsJSON(serviceAccountKeyJson)) //.WithTokenSource(tokenSource))
+		opts = []grpc.DialOption{
+			grpc.WithTransportCredentials(creds),
 		}
+
+		pubSubClient, err = pubsub.NewClient(ctx, projectID, option.WithGRPCDialOption(opts[0]))
+
 	}
 
 	if err != nil {
-		return false, "", fmt.Errorf("pubsub: NewClient: %w", err)
+
+		common_config.Logger.WithFields(logrus.Fields{
+			"ID":  "19951388-cad6-4f4f-b1d3-a1e8cf758fb4",
+			"err": err,
+		}).Error("Got some problem when creating 'pubsub.NewClient'")
+
+		return
 	}
+
+	//if err != nil {
+	//	return false, "", fmt.Errorf("pubsub: NewClient: %w", err)
+	//}
 	defer pubSubClient.Close()
 
 	var pubSubTopic *pubsub.Topic
