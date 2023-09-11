@@ -78,6 +78,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		returnMessageAckNack bool
 		returnMessageString  string
 	)
+
 	// Publish TestInstructionExecution on PubSub
 	returnMessageAckNack, returnMessageString, err = outgoingPubSubMessages.Publish(
 		processTestInstructionExecutionRequestAsJsonString)
