@@ -132,4 +132,10 @@ func init() {
 	// Set the environment variable that Google-client-libraries look for
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", common_config.LocalServiceAccountPath)
 
+	// Extract environment variable for 'ThisDomainsUuid'
+	common_config.ThisDomainsUuid = mustGetenv("ThisDomainsUuid")
+
+	// Extract environment variable for 'TestExecutionStatusPubSubTopicBase'
+	common_config.TestExecutionStatusPubSubTopicBase = mustGetenv("TestExecutionStatusPubSubTopicBase")
+
 }

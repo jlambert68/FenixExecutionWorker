@@ -38,4 +38,7 @@ var (
 	UsePubSubWhenSendingTestInstructionExecutions bool
 	TestInstructionExecutionPubSubTopic           string
 	LocalServiceAccountPath                       string
+
+	ThisDomainsUuid                    string
+	TestExecutionStatusPubSubTopicBase string
 )

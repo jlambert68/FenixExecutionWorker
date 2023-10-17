@@ -2,9 +2,9 @@ package gRPCServer
 
 import (
 	"FenixExecutionWorker/common_config"
-	"FenixExecutionWorker/outgoingPubSubMessages"
 	"context"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
+	"github.com/jlambert68/FenixSyncShared/pubSubHelpers"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -79,9 +79,15 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		returnMessageString  string
 	)
 
+	// Create PubSub-Topic
+	var pubSubTopicToLookFor string
+	pubSubTopicToLookFor = GeneratePubSubTopicForTestInstructionExecutions()
+
 	// Publish TestInstructionExecution on PubSub
-	returnMessageAckNack, returnMessageString, err = outgoingPubSubMessages.Publish(
-		processTestInstructionExecutionRequestAsJsonString)
+	//returnMessageAckNack, returnMessageString, err = outgoingPubSubMessages.Publish(
+	//	processTestInstructionExecutionRequestAsJsonString)
+	returnMessageAckNack, returnMessageString, err = pubSubHelpers.PublishExecutionStatusOnPubSub(
+		pubSubTopicToLookFor, processTestInstructionExecutionRequestAsJsonString)
 
 	// Some problem when sending over PubSub
 	if returnMessageAckNack == false || err != nil {
@@ -107,4 +113,23 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 	return returnMessage, nil
 
+}
+
+// Create the PubSub-topic from Domain-Uuid
+func GeneratePubSubTopicForTestInstructionExecutions() (statusExecutionTopic string) {
+
+	var pubSubTopicBase string
+	pubSubTopicBase = common_config.TestExecutionStatusPubSubTopicBase
+
+	var testerGuiApplicationUuid string
+	testerGuiApplicationUuid = common_config.ThisDomainsUuid
+
+	// Get the first 8 characters from TesterGui-ApplicationUuid
+	var shortedAppUuid string
+	shortedAppUuid = testerGuiApplicationUuid[0:8]
+
+	// Build PubSub-topic
+	statusExecutionTopic = pubSubTopicBase + "-" + shortedAppUuid
+
+	return statusExecutionTopic
 }
