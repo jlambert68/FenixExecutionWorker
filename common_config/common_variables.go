@@ -7,3 +7,7 @@ var highestFenixExecutionServerProtoFileVersion int32 = -1
 var highestExecutionWorkerProtoFileVersion int32 = -1
 
 var Logger *logrus.Logger
+
+// TopicAndSubscriptionsExists
+// When a check that Topic, DeadLettering-Topic and their Subscriptions exist then this variable is set to true
+var TopicAndSubscriptionsExists bool

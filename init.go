@@ -119,9 +119,6 @@ func init() {
 		os.Exit(0)
 	}
 
-	// Extract PubSub-Topic for where to send 'TestInstructionExecutions'
-	common_config.TestInstructionExecutionPubSubTopic = mustGetenv("TestInstructionExecutionPubSubTopic")
-
 	// Extract local path to Service-Account file
 	common_config.LocalServiceAccountPath = mustGetenv("LocalServiceAccountPath")
 	// The only way have an OK space is to replace an existing character
@@ -129,13 +126,15 @@ func init() {
 		common_config.LocalServiceAccountPath = ""
 	}
 
-	// Set the environment variable that Google-client-libraries look for
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", common_config.LocalServiceAccountPath)
 
 	// Extract environment variable for 'ThisDomainsUuid'
 	common_config.ThisDomainsUuid = mustGetenv("ThisDomainsUuid")
 
-	// Extract environment variable for 'TestExecutionStatusPubSubTopicBase'
-	common_config.TestExecutionStatusPubSubTopicBase = mustGetenv("TestExecutionStatusPubSubTopicBase")
+	// Extract environment variable for 'TestInstructionExecutionPubSubTopicBase'
+	common_config.TestInstructionExecutionPubSubTopicBase = mustGetenv("TestInstructionExecutionPubSubTopicBase")
+
+	// Extract environment variable for 'TestInstructionExecutionPubSubTopicSchema'
+	common_config.TestInstructionExecutionPubSubTopicSchema = mustGetenv("TestInstructionExecutionPubSubTopicSchema")
 
 }

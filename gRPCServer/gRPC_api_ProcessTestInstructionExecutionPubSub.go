@@ -26,6 +26,8 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		"id": "1ef7f394-6a6d-49be-a398-20b69ec58594",
 	}).Debug("Outgoing 'gRPC - ProcessTestInstructionExecutionPubSub'")
 
+	var err error
+
 	// Calling system
 	userId := "Execution Server"
 
@@ -39,6 +41,10 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		// Exiting
 		return returnMessage, nil
 	}
+
+	// Create PubSub-Topic
+	var pubSubTopicToLookFor string
+	pubSubTopicToLookFor = common_config.GeneratePubSubTopicForTestInstructionExecutions()
 
 	// Convert gRPC-message into json-string
 	var processTestInstructionExecutionRequestAsJsonString string
@@ -66,6 +72,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 		return returnMessage, nil
 	}
+
 	common_config.Logger.WithFields(logrus.Fields{
 		"Id": "01a55d6b-311d-4bdd-8284-f2f4ac8e582a",
 		"processTestInstructionExecutionRequestAsJsonString": processTestInstructionExecutionRequestAsJsonString,
@@ -74,14 +81,9 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	}).Debug("Message before and after json-convert")
 
 	var (
-		err                  error
 		returnMessageAckNack bool
 		returnMessageString  string
 	)
-
-	// Create PubSub-Topic
-	var pubSubTopicToLookFor string
-	pubSubTopicToLookFor = GeneratePubSubTopicForTestInstructionExecutions()
 
 	// Publish TestInstructionExecution on PubSub
 	//returnMessageAckNack, returnMessageString, err = outgoingPubSubMessages.Publish(
@@ -113,23 +115,4 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 	return returnMessage, nil
 
-}
-
-// Create the PubSub-topic from Domain-Uuid
-func GeneratePubSubTopicForTestInstructionExecutions() (statusExecutionTopic string) {
-
-	var pubSubTopicBase string
-	pubSubTopicBase = common_config.TestExecutionStatusPubSubTopicBase
-
-	var testerGuiApplicationUuid string
-	testerGuiApplicationUuid = common_config.ThisDomainsUuid
-
-	// Get the first 8 characters from TesterGui-ApplicationUuid
-	var shortedAppUuid string
-	shortedAppUuid = testerGuiApplicationUuid[0:8]
-
-	// Build PubSub-topic
-	statusExecutionTopic = pubSubTopicBase + "-" + shortedAppUuid
-
-	return statusExecutionTopic
 }

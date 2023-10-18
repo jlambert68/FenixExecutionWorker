@@ -36,9 +36,12 @@ var (
 	AuthClientSecret string
 
 	UsePubSubWhenSendingTestInstructionExecutions bool
-	TestInstructionExecutionPubSubTopic           string
 	LocalServiceAccountPath                       string
 
-	ThisDomainsUuid                    string
-	TestExecutionStatusPubSubTopicBase string
+	ThisDomainsUuid                         string
+	TestInstructionExecutionPubSubTopicBase string
+
+	// TestInstructionExecutionPubSubTopicSchema
+	// Topic-schema name to be used when sending 'TestInstructionExecutions' to Connector
+	TestInstructionExecutionPubSubTopicSchema string
 )
