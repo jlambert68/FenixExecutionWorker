@@ -1,9 +1,8 @@
 module FenixExecutionWorker
 
-go 1.18
+go 1.19
 
 require (
-	cloud.google.com/go/pubsub v1.33.0
 	github.com/google/uuid v1.3.1
 	github.com/gorilla/pat v1.0.1
 	github.com/gorilla/sessions v1.2.1
@@ -23,26 +22,15 @@ require (
 	cloud.google.com/go v0.110.8 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.2 // indirect
-	github.com/go-gota/gota v0.12.0 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
+	cloud.google.com/go/pubsub v1.33.0 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
-	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.11.0 // indirect
-	github.com/jackc/pgio v1.0.0 // indirect
-	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgproto3/v2 v2.2.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
-	github.com/jackc/pgtype v1.10.0 // indirect
-	github.com/jackc/pgx/v4 v4.15.0 // indirect
-	github.com/jackc/puddle v1.2.1 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
-	gonum.org/v1/gonum v0.9.1 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231012201019-e917dd12ba7a // indirect
 )
