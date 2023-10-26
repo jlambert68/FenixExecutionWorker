@@ -43,11 +43,11 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 	}
 
 	// Get latest authorization token or create a new one to access PubSub for Connector
-	var appendedCtx context.Context
+	//var appendedCtx context.Context
 	var returnAckNack bool
 	var returnMessage string
 
-	appendedCtx, returnAckNack, returnMessage = gcp.Gcp.GenerateGCPAccessToken(context.Background(), gcp.GenerateTokenForPubSub)
+	_, returnAckNack, returnMessage = gcp.Gcp.GenerateGCPAccessToken(context.Background(), gcp.GenerateTokenForPubSub)
 	if returnAckNack == false {
 		ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
 			AckNack:                      false,
@@ -63,7 +63,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 	}
 
 	// Extract Token to be used by Connector to do a PubSub-Subscription
-	var pubSubTokenAsAny any
+	/*var pubSubTokenAsAny any
 	var pubSubTokenAsString string
 
 	pubSubTokenAsAny = appendedCtx.Value("authorization")
@@ -83,7 +83,9 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 		}
 	}
 
-	// Create response message to COnenctor
+	*/
+
+	// Create response message to Conenctor
 	ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
 		AckNack:                      true,
 		Comments:                     "",
@@ -93,7 +95,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 
 	connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
 		AckNackResponse:          ackNackResponse,
-		PubSubAuthorizationToken: pubSubTokenAsString,
+		PubSubAuthorizationToken: gcp.Gcp.GcpAccessTokenForServiceAccountsPubSub.AccessToken,
 	}
 
 	return connectorIsReadyResponseMessage, nil

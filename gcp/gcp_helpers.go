@@ -121,7 +121,7 @@ func (gcp *GcpObjectStruct) generateGCPAccessToken(ctx context.Context) (appende
 func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (appendedCtx context.Context, returnAckNack bool, returnMessage string) {
 
 	// Only create the token if there is none, or it has expired
-	if gcp.gcpAccessTokenForServiceAccountsPubSub == nil || gcp.gcpAccessTokenForServiceAccountsPubSub.Expiry.Before(time.Now()) {
+	if gcp.GcpAccessTokenForServiceAccountsPubSub == nil || gcp.GcpAccessTokenForServiceAccountsPubSub.Expiry.Before(time.Now()) {
 
 		// Create an identity token.
 		// With a global TokenSource tokens would be reused and auto-refreshed at need.
@@ -152,7 +152,7 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 			}).Debug("Got Bearer Token")
 		}
 
-		gcp.gcpAccessTokenForServiceAccountsPubSub = token
+		gcp.GcpAccessTokenForServiceAccountsPubSub = token
 
 	}
 

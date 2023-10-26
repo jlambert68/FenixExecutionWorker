@@ -9,7 +9,7 @@ import (
 type GcpObjectStruct struct {
 	logger                                    *logrus.Logger
 	gcpAccessTokenForServiceAccounts          *oauth2.Token
-	gcpAccessTokenForServiceAccountsPubSub    *oauth2.Token
+	GcpAccessTokenForServiceAccountsPubSub    *oauth2.Token
 	gcpAccessTokenForAuthorizedAccounts       goth.User
 	gcpAccessTokenForAuthorizedAccountsPubSub goth.User
 }
