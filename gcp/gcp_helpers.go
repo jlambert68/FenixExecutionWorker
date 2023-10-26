@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/toqueteos/webbrowser"
 	"golang.org/x/net/context"
+	"golang.org/x/oauth2"
 	"google.golang.org/api/idtoken"
 	grpcMetadata "google.golang.org/grpc/metadata"
 	"html/template"
@@ -120,6 +121,11 @@ func (gcp *GcpObjectStruct) generateGCPAccessToken(ctx context.Context) (appende
 // Generate Google access token for Pub Sub
 func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (appendedCtx context.Context, returnAckNack bool, returnMessage string) {
 
+	// Initiate variable if 'nil'
+	if gcp.GcpAccessTokenForServiceAccountsPubSub == nil {
+		gcp.gcpAccessTokenForServiceAccounts = &oauth2.Token{}
+	}
+
 	// Only create the token if there is none, or it has expired
 	if gcp.GcpAccessTokenForServiceAccountsPubSub == nil || gcp.GcpAccessTokenForServiceAccountsPubSub.Expiry.Before(time.Now()) {
 
@@ -147,8 +153,8 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 			return nil, false, "Problem getting the token"
 		} else {
 			gcp.logger.WithFields(logrus.Fields{
-				"ID": "a17e40dc-e7fc-4d7e-afbc-072a4c21850b",
-				//"token": token,
+				"ID":    "a17e40dc-e7fc-4d7e-afbc-072a4c21850b",
+				"token": token,
 			}).Debug("Got Bearer Token")
 		}
 

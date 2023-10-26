@@ -3,6 +3,7 @@ package main
 import (
 	"FenixExecutionWorker/common_config"
 	"FenixExecutionWorker/gRPCServer"
+	"FenixExecutionWorker/gcp"
 	"fmt"
 	uuidGenerator "github.com/google/uuid"
 	"github.com/jlambert68/FenixSyncShared/pubSubHelpers"
@@ -39,6 +40,9 @@ func fenixExecutionWorkerMain() {
 		logger:     nil,
 		GrpcServer: &gRPCServer.FenixExecutionWorkerGrpcObjectStruct{},
 	}
+
+	// Initiate gcp_helper object
+	gcp.Gcp = gcp.GcpObjectStruct{}
 
 	// Init logger
 	FenixExecutionWorkerObject.InitLogger("")
