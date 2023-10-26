@@ -6,7 +6,7 @@ require (
 	github.com/google/uuid v1.3.1
 	github.com/gorilla/pat v1.0.1
 	github.com/gorilla/sessions v1.2.1
-	github.com/jlambert68/FenixGrpcApi v0.0.0-20231011131633-773faa972c32
+	github.com/jlambert68/FenixGrpcApi v0.0.0-20231026051923-6c9bdf801052
 	github.com/jlambert68/FenixSyncShared v0.0.0-20231023123349-e891692cede8
 	github.com/markbates/goth v1.78.0
 	github.com/sirupsen/logrus v1.9.3

@@ -9,7 +9,9 @@ import (
 )
 
 // SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer - When a TestInstruction has been fully executed the Client use this to inform the results of the execution result to the Server
-func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(finalTestInstructionExecutionResultMessage *fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage) (bool, string) {
+func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(
+	finalTestInstructionExecutionResultMessage *fenixExecutionServerGrpcApi.
+		FinalTestInstructionExecutionResultMessage) (bool, string) {
 
 	fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 		"id": "4f23b4a2-2d0c-43a1-8c66-20949978bcce",
