@@ -93,9 +93,19 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 	}
 
-	connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
-		AckNackResponse:          ackNackResponse,
-		PubSubAuthorizationToken: gcp.Gcp.GcpAccessTokenForServiceAccountsPubSub.AccessToken,
+	if common_config.ExecutionLocationForWorker == common_config.LocalhostNoDocker {
+		// Running Locally
+		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
+			AckNackResponse:          ackNackResponse,
+			PubSubAuthorizationToken: gcp.Gcp.GcpAccessTokenForExternalPubSubUserRequests.AccessToken,
+		}
+
+	} else {
+		// Running in GCP
+		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
+			AckNackResponse:          ackNackResponse,
+			PubSubAuthorizationToken: gcp.Gcp.GcpAccessTokenForExternalPubSubRequests.AccessToken,
+		}
 	}
 
 	return connectorIsReadyResponseMessage, nil

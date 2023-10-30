@@ -51,7 +51,7 @@ func (gcp *GcpObjectStruct) GenerateGCPAccessToken(ctx context.Context, tokenTar
 		}
 
 	case GenerateTokenForPubSub:
-		// Only use Authorized used when running locally and ExecutionServer is in GCP
+		// Extracts a token to be used for external PubSub-request
 		if common_config.ExecutionLocationForWorker == common_config.LocalhostNoDocker {
 
 			// Use Authorized user when targeting GCP from local
@@ -134,6 +134,7 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 		// A given TokenSource is specific to the audience.
 
 		tokenSource, err := idtoken.NewTokenSource(ctx, "https://www.googleapis.com/auth/pubsub")
+
 		if err != nil {
 			gcp.logger.WithFields(logrus.Fields{
 				"ID":  "ffb7cdcc-00f1-4560-9fd6-a45d2423230d",
@@ -158,7 +159,7 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 			}).Debug("Got Bearer Token")
 		}
 
-		gcp.GcpAccessTokenForServiceAccountsPubSub = token
+		gcp.GcpAccessTokenForExternalPubSubRequests = token
 
 	}
 
@@ -168,7 +169,7 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 	}).Debug("Will use Bearer Token")
 
 	// Add token to GrpcServer Request.
-	appendedCtx = grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+gcp.gcpAccessTokenForServiceAccounts.AccessToken)
+	appendedCtx = grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+gcp.GcpAccessTokenForExternalPubSubRequests.AccessToken)
 
 	return appendedCtx, true, ""
 
@@ -293,9 +294,9 @@ func (gcp *GcpObjectStruct) GenerateGCPAccessTokenForAuthorizedUserPubSub(ctx co
 
 	// Only create the token if there is none, or it has expired (or 5 minutes before expiration
 	timeToCompareTo := time.Now().Add(-time.Minute * 5)
-	if !(gcp.gcpAccessTokenForAuthorizedAccountsPubSub.IDToken == "" || gcp.gcpAccessTokenForAuthorizedAccountsPubSub.ExpiresAt.Before(timeToCompareTo)) {
+	if !(gcp.GcpAccessTokenForExternalPubSubUserRequests.IDToken == "" || gcp.GcpAccessTokenForExternalPubSubUserRequests.ExpiresAt.Before(timeToCompareTo)) {
 		// We already have a ID-token that can be used, so return that
-		appendedCtx = grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+gcp.gcpAccessTokenForAuthorizedAccountsPubSub.IDToken)
+		appendedCtx = grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+gcp.GcpAccessTokenForExternalPubSubUserRequests.IDToken)
 
 		return appendedCtx, true, ""
 	}
@@ -339,7 +340,7 @@ func (gcp *GcpObjectStruct) GenerateGCPAccessTokenForAuthorizedUserPubSub(ctx co
 		t.Execute(res, user)
 
 		// Save ID-token
-		gcp.gcpAccessTokenForAuthorizedAccountsPubSub = user
+		gcp.GcpAccessTokenForExternalPubSubUserRequests = user
 
 		// Trigger Close of Web Server, and 'true' means that a ID-to
 		DoneChannel <- true
@@ -386,7 +387,7 @@ func (gcp *GcpObjectStruct) GenerateGCPAccessTokenForAuthorizedUserPubSub(ctx co
 	// Depending on the outcome of getting a token return different results
 	if gotIdTokenResult == true {
 		// Success in getting an ID-token
-		appendedCtx = grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+gcp.gcpAccessTokenForAuthorizedAccountsPubSub.IDToken)
+		appendedCtx = grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+gcp.GcpAccessTokenForExternalPubSubUserRequests.IDToken)
 
 		return appendedCtx, true, ""
 	} else {
@@ -476,8 +477,8 @@ func (gcp *GcpObjectStruct) initiateUserObjectPubSub() {
 
 	// Only do initiation if it's not done before
 
-	if gcp.gcpAccessTokenForAuthorizedAccountsPubSub.UserID == "" {
-		gcp.gcpAccessTokenForAuthorizedAccountsPubSub = goth.User{}
+	if gcp.GcpAccessTokenForExternalPubSubUserRequests.UserID == "" {
+		gcp.GcpAccessTokenForExternalPubSubUserRequests = goth.User{}
 	}
 
 	return
