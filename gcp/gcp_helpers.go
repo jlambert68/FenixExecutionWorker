@@ -133,7 +133,7 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 		// With a global TokenSource tokens would be reused and auto-refreshed at need.
 		// A given TokenSource is specific to the audience.
 
-		tokenSource, err := idtoken.NewTokenSource(ctx, "https://www.googleapis.com/auth/pubsub")
+		tokenSource, err := idtoken.NewTokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform") //"https://www.googleapis.com/auth/pubsub")
 
 		if err != nil {
 			gcp.logger.WithFields(logrus.Fields{
