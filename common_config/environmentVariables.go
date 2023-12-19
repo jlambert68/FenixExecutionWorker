@@ -6,8 +6,13 @@ package common_config
 // Where is the Worker running
 var ExecutionLocationForWorker ExecutionLocationTypeType
 
+// ExecutionLocationForFenixExecutionServer
 // Where is Fenix Execution Server running
 var ExecutionLocationForFenixExecutionServer ExecutionLocationTypeType
+
+// ExecutionLocationForFenixGuiBuilderServer
+// Where is Fenix GuiBuilder Server running
+var ExecutionLocationForFenixGuiBuilderServer ExecutionLocationTypeType
 
 // Definitions for where client and Fenix Server is running
 type ExecutionLocationTypeType int
@@ -29,6 +34,11 @@ var (
 	FenixExecutionServerAddress       string
 	FenixExecutionServerPort          int
 	FenixExecutionServerAddressToDial string
+
+	// Fenix GuiBuilder Server
+	FenixGuiBuilderServerAddress       string
+	FenixGuiBuilderServerPort          int
+	FenixGuiBuilderServerAddressToDial string
 
 	GcpProject string
 

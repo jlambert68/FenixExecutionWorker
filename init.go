@@ -78,6 +78,19 @@ func init() {
 	// Address when Execution Server is not in GCP
 	common_config.FenixExecutionServerAddressToDial = common_config.FenixExecutionServerAddress + ":" + strconv.Itoa(common_config.FenixExecutionServerPort)
 
+	// Address to Fenix GuiBuilder Server
+	common_config.FenixGuiBuilderServerAddress = mustGetenv("FenixGuiBuilderServerAddress")
+
+	// Port for Fenix GuiBuilder Server
+	common_config.FenixGuiBuilderServerPort, err = strconv.Atoi(mustGetenv("FenixGuiBuilderServerPort"))
+	if err != nil {
+		fmt.Println("Couldn't convert environment variable 'FenixGuiBuilderServerPort' to an integer, error: ", err)
+		os.Exit(0)
+	}
+
+	// Address when GuiBuilder Server is not in GCP
+	common_config.FenixGuiBuilderServerAddressToDial = common_config.FenixGuiBuilderServerAddress + ":" + strconv.Itoa(common_config.FenixGuiBuilderServerPort)
+
 	// Port for Execution Worker
 	common_config.ExecutionWorkerServerPort, err = strconv.Atoi(mustGetenv("ExecutionWorkerPort"))
 	if err != nil {

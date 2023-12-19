@@ -4,7 +4,6 @@ import (
 	"FenixExecutionWorker/common_config"
 	"FenixExecutionWorker/gcp"
 	"context"
-	"fmt"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 )
@@ -86,7 +85,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 
 	*/
 
-	// Create response message to Conenctor
+	// Create response message to Connector
 	ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
 		AckNack:                      true,
 		Comments:                     "",
@@ -98,19 +97,16 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 		// Running Locally
 		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
 			AckNackResponse:          ackNackResponse,
-			PubSubAuthorizationToken: gcp.Gcp.GcpAccessTokenForExternalPubSubUserRequests.AccessToken,
+			PubSubAuthorizationToken: "Not used for now",
 		}
-
-		fmt.Println(gcp.Gcp.GcpAccessTokenForExternalPubSubUserRequests)
 
 	} else {
 		// Running in GCP
 		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
 			AckNackResponse:          ackNackResponse,
-			PubSubAuthorizationToken: gcp.Gcp.GcpAccessTokenForExternalPubSubRequests.AccessToken,
+			PubSubAuthorizationToken: "Not used for now",
 		}
 
-		fmt.Println(gcp.Gcp.GcpAccessTokenForExternalPubSubRequests)
 	}
 
 	return connectorIsReadyResponseMessage, nil
