@@ -4,7 +4,6 @@ import (
 	"FenixExecutionWorker/common_config"
 	"FenixExecutionWorker/messagesToGuiBuilderServer"
 	"context"
-	"encoding/json"
 	"fmt"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	fenixTestCaseBuilderServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixTestCaseBuilderServer/fenixTestCaseBuilderServerGrpcApi/go_grpc_api"
@@ -25,7 +24,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 
 	s.logger.WithFields(logrus.Fields{
 		"id": "38b45573-c71e-4059-afeb-cd2deef237fb",
-		"supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcWorkerMessage": supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcWorkerMessage,
+		//"supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcWorkerMessage": supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcWorkerMessage,
 	}).Debug("Incoming 'gRPCWorker- ConnectorPublishSupportedTestInstructionsAndTestInstructionContainersAndAllowedUsers'")
 
 	defer s.logger.WithFields(logrus.Fields{
@@ -74,35 +73,20 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 		}).Error("Problem when recreated Hashes from gRPC-Worker-message " +
 			"in 'ConnectorPublishSupportedTestInstructionsAndTestInstructionContainersAndAllowedUsers'")
 
-		var byteSlice []byte
-		var byteSliceAsString string
-		// Convert TestInstructionVersion to byte-string and then Hash message
-		byteSlice, err = json.Marshal(errorSliceWorker)
-		if err != nil {
-			common_config.Logger.WithFields(logrus.Fields{
-				"ID":               "1f484750-f756-4107-8d5a-7c92b132dc69",
-				"errorSliceWorker": errorSliceWorker,
-				"err":              err,
-			}).Error("Problem when converting into byteSlice")
-
-			// Create return message
-			returnMessage = &fenixExecutionWorkerGrpcApi.AckNackResponse{
-				AckNack:                      false,
-				Comments:                     "Problem when converting into byteSlice",
-				ErrorCodes:                   []fenixExecutionWorkerGrpcApi.ErrorCodesEnum{},
-				ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+		// Loop error messages and concatenate into one string
+		var errorMessageBackToConnector string
+		for _, errorFromWorker := range errorSliceWorker {
+			if len(errorMessageBackToConnector) == 0 {
+				errorMessageBackToConnector = errorFromWorker.Error()
+			} else {
+				errorMessageBackToConnector = errorMessageBackToConnector + "; " + errorFromWorker.Error()
 			}
-
-			return returnMessage, nil
 		}
-
-		// Convert byteSlice into string
-		byteSliceAsString = string(byteSlice)
 
 		// Create return message
 		returnMessage = &fenixExecutionWorkerGrpcApi.AckNackResponse{
 			AckNack:                      false,
-			Comments:                     byteSliceAsString,
+			Comments:                     errorMessageBackToConnector,
 			ErrorCodes:                   []fenixExecutionWorkerGrpcApi.ErrorCodesEnum{},
 			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 		}
