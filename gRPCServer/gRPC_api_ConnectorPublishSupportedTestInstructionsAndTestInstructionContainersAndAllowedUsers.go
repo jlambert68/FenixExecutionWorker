@@ -8,6 +8,7 @@ import (
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	fenixTestCaseBuilderServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixTestCaseBuilderServer/fenixTestCaseBuilderServerGrpcApi/go_grpc_api"
 	"github.com/jlambert68/FenixTestInstructionsAdminShared/TestInstructionAndTestInstuctionContainerTypes"
+	"github.com/jlambert68/FenixTestInstructionsAdminShared/TypeAndStructs"
 	"github.com/jlambert68/FenixTestInstructionsAdminShared/shared_code"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -64,7 +65,8 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 
 	// Verify recreated Hashes from gRPC-Worker-message
 	var errorSliceWorker []error
-	errorSliceWorker = shared_code.VerifyTestInstructionAndTestInstructionContainerAndUsersMessageHashes(
+	errorSliceWorker = shared_code.VerifyTestInstructionAndTestInstructionContainerAndUsersMessageHashesAndDomain(
+		TypeAndStructs.DomainUUIDType(common_config.ThisDomainsUuid),
 		testInstructionsAndTestInstructionContainersFromGrpcWorkerMessage)
 	if errorSliceWorker != nil {
 		common_config.Logger.WithFields(logrus.Fields{
@@ -118,7 +120,8 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	// Second
 	// Verify recreated Hashes from gRPC-Builder-message
 	var errorSliceBuilder []error
-	errorSliceBuilder = shared_code.VerifyTestInstructionAndTestInstructionContainerAndUsersMessageHashes(
+	errorSliceBuilder = shared_code.VerifyTestInstructionAndTestInstructionContainerAndUsersMessageHashesAndDomain(
+		TypeAndStructs.DomainUUIDType(common_config.ThisDomainsUuid),
 		testInstructionsAndTestInstructionContainersFromGrpcBuilderMessage)
 
 	// If there are error then loop and concatenate error message to be sent to user
