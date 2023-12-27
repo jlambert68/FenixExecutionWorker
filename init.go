@@ -151,6 +151,6 @@ func init() {
 	common_config.TestInstructionExecutionPubSubTopicSchema = mustGetenv("TestInstructionExecutionPubSubTopicSchema")
 
 	// Extract environment variable for 'ServiceAccountUsedForSigningMessage '
-	common_config.TestInstructionExecutionPubSubTopicSchema = mustGetenv("ServiceAccountUsedForSigningMessage")
+	common_config.ServiceAccountUsedForSigningMessage = mustGetenv("ServiceAccountUsedForSigningMessage")
 
 }

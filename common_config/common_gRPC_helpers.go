@@ -3,6 +3,7 @@ package common_config
 import (
 	fenixExecutionServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionServerGrpcApi/go_grpc_api"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
+	fenixTestCaseBuilderServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixTestCaseBuilderServer/fenixTestCaseBuilderServerGrpcApi/go_grpc_api"
 )
 
 // IsCallerUsingCorrectWorkerProtoFileVersion ********************************************************************************************************************
@@ -97,4 +98,28 @@ func GetHighestExecutionWorkerProtoFileVersion() int32 {
 	highestExecutionWorkerProtoFileVersion = maxValue
 
 	return highestExecutionWorkerProtoFileVersion
+}
+
+// ********************************************************************************************************************
+// Get the highest ClientProtoFileVersionEnumeration for BuilderServer
+func GetHighestBuilderServerProtoFileVersion() int32 {
+
+	// Check if there already is a 'highestclientProtoFileVersion' saved, if so use that one
+	if highestBuilderServerProtoFileVersion != -1 {
+		return highestBuilderServerProtoFileVersion
+	}
+
+	// Find the highest value for proto-file version
+	var maxValue int32
+	maxValue = 0
+
+	for _, v := range fenixTestCaseBuilderServerGrpcApi.CurrentFenixTestCaseBuilderProtoFileVersionEnum_value {
+		if v > maxValue {
+			maxValue = v
+		}
+	}
+
+	highestBuilderServerProtoFileVersion = maxValue
+
+	return highestBuilderServerProtoFileVersion
 }

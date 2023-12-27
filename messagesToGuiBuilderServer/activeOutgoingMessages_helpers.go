@@ -161,8 +161,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SignMe
 	defer credsClient.Close()
 
 	// Specify the service account name
-	serviceAccount := fmt.Sprintf("projects/%s/serviceAccounts/%s",
-		common_config.GcpProject,
+	serviceAccount := fmt.Sprintf("projects/-/serviceAccounts/%s",
 		common_config.ServiceAccountUsedForSigningMessage)
 
 	// The data to be signed
@@ -187,7 +186,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SignMe
 	}
 
 	signedMessage = signResponse.SignedBlob
-	signResponse.GetKeyId()
+
 	// Return signed message
 	return signedMessage, err
 }

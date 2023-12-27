@@ -5,10 +5,11 @@ go 1.21
 toolchain go1.21.5
 
 require (
+	cloud.google.com/go/iam v1.1.5
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/pat v1.0.1
 	github.com/gorilla/sessions v1.2.1
-	github.com/jlambert68/FenixGrpcApi v0.0.0-20231227163427-10e6a71886e3
+	github.com/jlambert68/FenixGrpcApi v0.0.0-20231227184334-2031a574037c
 	github.com/jlambert68/FenixSyncShared v0.0.0-20231023123349-e891692cede8
 	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20231227093652-90e9fd9f49e2
 	github.com/markbates/goth v1.78.0
@@ -24,7 +25,6 @@ require (
 require (
 	cloud.google.com/go v0.110.10 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	cloud.google.com/go/iam v1.1.5 // indirect
 	cloud.google.com/go/pubsub v1.33.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-gota/gota v0.12.0 // indirect
@@ -67,5 +67,5 @@ require (
 	//golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto v0.0.0-20231120223509-83a465c0220f // indirect
+	google.golang.org/genproto v0.0.0-20231120223509-83a465c0220f
 )

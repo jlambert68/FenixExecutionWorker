@@ -204,7 +204,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	var signedMessageByWorkerServiceAccountMessage *fenixTestCaseBuilderServerGrpcApi.SignedMessageByWorkerServiceAccountMessage
 	signedMessageByWorkerServiceAccountMessage = &fenixTestCaseBuilderServerGrpcApi.SignedMessageByWorkerServiceAccountMessage{
 		MessageToBeSigned:          messageToSign,
-		Signature:                  string(signedMessageAsByteSlice),
+		Signature:                  signedMessageAsByteSlice,
 		PublicKeyForServiceAccount: "",
 	}
 	supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcBuilderMessage.

@@ -60,7 +60,9 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendGe
 
 	// Create empty message to send
 	var emptyParameter *fenixTestCaseBuilderServerGrpcApi.EmptyParameter
-	emptyParameter = &fenixTestCaseBuilderServerGrpcApi.EmptyParameter{}
+	emptyParameter = &fenixTestCaseBuilderServerGrpcApi.EmptyParameter{
+		ProtoFileVersionUsedByClient: fenixTestCaseBuilderServerGrpcApi.CurrentFenixTestCaseBuilderProtoFileVersionEnum(common_config.GetHighestBuilderServerProtoFileVersion()),
+	}
 
 	// Do gRPC-call
 	returnMessage, err := tempFenixGuiBuilderServerGrpcClient.GetMessageToSignToProveCallerIdentity(
