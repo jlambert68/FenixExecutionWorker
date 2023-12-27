@@ -159,7 +159,59 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 		os.Exit(1)
 	}
 
-	succeededToSend, responseMessage := fenixGuiBuilderObject.
+	// Get Message to sign to prove identity
+	succeededToSend, responseMessage, messageToSign := fenixGuiBuilderObject.
+		SendGetMessageToSignToProveCallerIdentity()
+
+	if succeededToSend == false {
+		s.logger.WithFields(logrus.Fields{
+			"id":              "7fb5a94a-7984-47f8-8c08-0d7da1446b94",
+			"responseMessage": responseMessage,
+		}).Error("Got some error when sending 'GetMessageToSignToProveCallerIdentity'")
+
+		// Generate response
+		returnMessage = &fenixExecutionWorkerGrpcApi.AckNackResponse{
+			AckNack:                      succeededToSend,
+			Comments:                     fmt.Sprintf("Messagage from BuilderServer: '%s'", responseMessage),
+			ErrorCodes:                   nil,
+			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+		}
+
+		return returnMessage, nil
+
+	}
+
+	// Sign Message to prove Identity to BuilderServer
+	var signedMessageAsByteSlice []byte
+	signedMessageAsByteSlice, err = fenixGuiBuilderObject.SignMessageToProveIdentityToBuilderServer(messageToSign)
+	if err != nil {
+		s.logger.WithFields(logrus.Fields{
+			"id":  "532dff93-5786-4350-96a2-ddf977ee5ec5",
+			"err": err,
+		}).Error("Got some error when signing message")
+
+		returnMessage = &fenixExecutionWorkerGrpcApi.AckNackResponse{
+			AckNack:                      false,
+			Comments:                     fmt.Sprintf("Got some error when signing message. '%s'", err.Error()),
+			ErrorCodes:                   nil,
+			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+		}
+
+		return returnMessage, err
+	}
+
+	// Add Signed message
+	var signedMessageByWorkerServiceAccountMessage *fenixTestCaseBuilderServerGrpcApi.SignedMessageByWorkerServiceAccountMessage
+	signedMessageByWorkerServiceAccountMessage = &fenixTestCaseBuilderServerGrpcApi.SignedMessageByWorkerServiceAccountMessage{
+		MessageToBeSigned:          messageToSign,
+		Signature:                  string(signedMessageAsByteSlice),
+		PublicKeyForServiceAccount: "",
+	}
+	supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcBuilderMessage.
+		SignedMessageByWorkerServiceAccount = signedMessageByWorkerServiceAccountMessage
+
+	// Publish Supported TestInstructions, TestInstructionContainers And AllowedUsers To FenixGuiBuilderServer
+	succeededToSend, responseMessage = fenixGuiBuilderObject.
 		SendPublishSupportedTestInstructionsAndTestInstructionContainersAndAllowedUsersToFenixGuiBuilderServer(
 			supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcBuilderMessage)
 
@@ -168,6 +220,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 			"id":              "532dff93-5786-4350-96a2-ddf977ee5ec5",
 			"responseMessage": responseMessage,
 		}).Error("Got some error when sending 'CompleteTestInstructionExecutionResultToFenixExecutionServer'")
+
 	}
 
 	// Create Error Codes

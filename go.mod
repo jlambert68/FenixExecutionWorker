@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/pat v1.0.1
 	github.com/gorilla/sessions v1.2.1
-	github.com/jlambert68/FenixGrpcApi v0.0.0-20231215160546-f65965881a79
+	github.com/jlambert68/FenixGrpcApi v0.0.0-20231227163427-10e6a71886e3
 	github.com/jlambert68/FenixSyncShared v0.0.0-20231023123349-e891692cede8
 	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20231227093652-90e9fd9f49e2
 	github.com/markbates/goth v1.78.0

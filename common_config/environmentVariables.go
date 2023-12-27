@@ -54,4 +54,8 @@ var (
 	// TestInstructionExecutionPubSubTopicSchema
 	// Topic-schema name to be used when sending 'TestInstructionExecutions' to Connector
 	TestInstructionExecutionPubSubTopicSchema string
+
+	// ServiceAccountUsedForSigningMessage
+	// Service Account used for Signing Message to prove Identity
+	ServiceAccountUsedForSigningMessage string
 )
