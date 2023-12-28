@@ -181,9 +181,18 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 
 	}
 
+	// Specify the service account to be used when signing
+	var serviceAccountUsedWhenSigning string
+	serviceAccountUsedWhenSigning = fmt.Sprintf("projects/-/serviceAccounts/%s",
+		common_config.ServiceAccountUsedForSigningMessage)
+
 	// Sign Message to prove Identity to BuilderServer
-	var signedMessageAsByteSlice []byte
-	signedMessageAsByteSlice, err = fenixGuiBuilderObject.SignMessageToProveIdentityToBuilderServer(messageToSign)
+	var hashOfSignature string
+	var hashedKeyId string
+	hashOfSignature, hashedKeyId, err = shared_code.SignMessageToProveIdentityToBuilderServer(
+		messageToSign,
+		serviceAccountUsedWhenSigning)
+
 	if err != nil {
 		s.logger.WithFields(logrus.Fields{
 			"id":  "532dff93-5786-4350-96a2-ddf977ee5ec5",
@@ -203,9 +212,9 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	// Add Signed message
 	var signedMessageByWorkerServiceAccountMessage *fenixTestCaseBuilderServerGrpcApi.SignedMessageByWorkerServiceAccountMessage
 	signedMessageByWorkerServiceAccountMessage = &fenixTestCaseBuilderServerGrpcApi.SignedMessageByWorkerServiceAccountMessage{
-		MessageToBeSigned:          messageToSign,
-		Signature:                  signedMessageAsByteSlice,
-		PublicKeyForServiceAccount: "",
+		MessageToBeSigned: messageToSign,
+		HashOfSignature:   hashOfSignature,
+		HashedKeyId:       hashedKeyId,
 	}
 	supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcBuilderMessage.
 		SignedMessageByWorkerServiceAccount = signedMessageByWorkerServiceAccountMessage

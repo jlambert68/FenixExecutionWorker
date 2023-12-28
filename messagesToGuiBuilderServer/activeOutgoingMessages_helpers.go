@@ -4,8 +4,8 @@ import (
 	"FenixExecutionWorker/common_config"
 	iam_credentials "cloud.google.com/go/iam/credentials/apiv1"
 	"crypto/tls"
-	"fmt"
 	fenixTestCaseBuilderServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixTestCaseBuilderServer/fenixTestCaseBuilderServerGrpcApi/go_grpc_api"
+	fenixSyncShared "github.com/jlambert68/FenixSyncShared"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/api/idtoken"
 	iam_credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
@@ -147,8 +147,10 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) genera
 // SignMessageToProveIdentityToBuilderServer
 // Sign Message to be sent to BuilderServer
 func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SignMessageToProveIdentityToBuilderServer(
-	messageToBeSigned string) (
-	signedMessage []byte,
+	messageToBeSigned string,
+	serviceAccountUsedForSigning string) (
+	hashOfSignature string,
+	hashedKeyId string,
 	err error) {
 
 	ctx := context.Background()
@@ -156,20 +158,22 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SignMe
 	// Initialize the client
 	credsClient, err := iam_credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
-		panic(err)
-	}
-	defer credsClient.Close()
+		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
+			"ID":  "6b067fc0-4066-4e76-b447-b1b97348cb04",
+			"err": err,
+		}).Error("Got problem when creating a 'NewIamCredentialsClient'")
 
-	// Specify the service account name
-	serviceAccount := fmt.Sprintf("projects/-/serviceAccounts/%s",
-		common_config.ServiceAccountUsedForSigningMessage)
+		return "", "", err
+	}
+
+	defer credsClient.Close()
 
 	// The data to be signed
 	data := []byte(messageToBeSigned)
 
 	// Request to sign a byte array with the service account's private key
 	req := &iam_credentialspb.SignBlobRequest{
-		Name:    serviceAccount,
+		Name:    serviceAccountUsedForSigning,
 		Payload: data,
 	}
 
@@ -182,85 +186,22 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SignMe
 			"err": err,
 		}).Error("Got problem when signing message")
 
-		return nil, err
+		return "", "", err
 	}
 
+	var signedMessage []byte
 	signedMessage = signResponse.SignedBlob
 
-	// Return signed message
-	return signedMessage, err
+	// Hash the signature
+	hashOfSignature = fenixSyncShared.HashSingleValue(string(signedMessage))
+
+	// Extract KeyId used when signing
+	var keyId string
+	keyId = signResponse.GetKeyId()
+
+	// Hash KeyId
+	hashedKeyId = fenixSyncShared.HashSingleValue(keyId)
+
+	// Return result
+	return hashOfSignature, hashedKeyId, err
 }
-
-/*
-// VerifySignedMessageReceivedFromWorkerServer
-// Verify signature sent from WorkerServer
-func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) VerifySignedMessageReceivedFromWorkerServer(
-	messageToBeSigned string) (
-	signatureMessage string,
-	err error) {
-
-	ctx := context.Background()
-
-	// Initialize the client
-	credsClient, err := iam_credentials.NewIamCredentialsClient(ctx)
-	if err != nil {
-		panic(err)
-	}
-	defer credsClient.Close()
-
-	// Specify the service account name
-	serviceAccount := fmt.Sprintf("projects/%s/serviceAccounts/%s",
-		common_config.GcpProject,
-		common_config.ServiceAccountUsedForSigningMessage)
-
-	// The data to be signed
-	data := []byte(messageToBeSigned)
-
-	// Signature obtained from the signing process
-	signature := []byte(signatureMessage)
-
-	// Request the public key of the service account
-	publicKeyReq := &iam_credentialspb.GetPublicKeyRequest{
-		Name: serviceAccount,
-	}
-
-	publicKeyResp, err := credsClient.GetPublicKey(ctx, publicKeyReq)
-	if err != nil {
-		panic(err)
-	}
-
-	// Decode and parse the public key
-	block, _ := pem.Decode([]byte(publicKeyResp.PublicKeyData))
-	if block == nil {
-		panic("failed to parse PEM block containing the public key")
-	}
-
-	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
-	if err != nil {
-		panic(err)
-	}
-
-	rsaPub, ok := pub.(*rsa.PublicKey)
-	if !ok {
-		panic("public key is not of type RSA")
-	}
-
-	// Verify the signature
-	hash := crypto.SHA256.New()
-	hash.Write(data)
-	hashed := hash.Sum(nil)
-
-	err = rsa.VerifyPKCS1v15(rsaPub, crypto.SHA256, hashed, signature)
-	if err != nil {
-		if st, ok := status.FromError(err); ok {
-			fmt.Println("Verification failed:", st.Message())
-		} else {
-			fmt.Println("Verification failed:", err)
-		}
-	} else {
-		fmt.Println("Verification successful")
-	}
-}
-
-
-*/
