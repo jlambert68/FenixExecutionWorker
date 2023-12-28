@@ -195,7 +195,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 
 	if err != nil {
 		s.logger.WithFields(logrus.Fields{
-			"id":  "532dff93-5786-4350-96a2-ddf977ee5ec5",
+			"id":  "bb8284b2-cc4f-440f-8474-a2ea12adceb1",
 			"err": err,
 		}).Error("Got some error when signing message")
 
@@ -228,7 +228,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 		s.logger.WithFields(logrus.Fields{
 			"id":              "532dff93-5786-4350-96a2-ddf977ee5ec5",
 			"responseMessage": responseMessage,
-		}).Error("Got some error when sending 'CompleteTestInstructionExecutionResultToFenixExecutionServer'")
+		}).Error("Got some error when sending 'GetMessageToSignToProveCallerIdentity'")
 
 	}
 

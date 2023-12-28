@@ -65,7 +65,7 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendRep
 	// Shouldn't happen
 	if err != nil {
 		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-			"ID":    "ebe601e0-14b9-42c5-8f8f-960acec80433",
+			"ID":    "eff85419-7906-46ee-8f72-8c5e71f22b08",
 			"error": err,
 		}).Error("Problem to do gRPC-call to FenixExecutionServer for 'SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer'")
 

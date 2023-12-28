@@ -34,6 +34,12 @@ type fenixExecutionWorkerConnectorGrpcServicesServer struct {
 	fenixExecutionWorkerGrpcApi.UnimplementedFenixExecutionWorkerConnectorGrpcServicesServer
 }
 
+// gRPCServer Server used from BuilderServer
+type fenixExecutionWorkerBuilderGrpcServicesServer struct {
+	logger *logrus.Logger
+	fenixExecutionWorkerGrpcApi.UnimplementedFenixBuilderGprcServicesServer
+}
+
 // Used  by gRPC server that receives Connector-connections to inform gRPC-server that receives ExecutionServer-connections
 var connectorHasConnected bool
 var connectorHasConnectedAtLeastOnce bool

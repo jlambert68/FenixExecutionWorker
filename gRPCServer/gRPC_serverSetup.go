@@ -46,6 +46,7 @@ func (fenixExecutionWorkerGrpcObject *FenixExecutionWorkerGrpcObjectStruct) Init
 	fenixExecutionWorkerGrpcServer = grpc.NewServer()
 	fenixExecutionWorkerGrpcApi.RegisterFenixExecutionWorkerGrpcServicesServer(fenixExecutionWorkerGrpcServer, &fenixExecutionWorkerGrpcServicesServer{logger: logger})
 	fenixExecutionWorkerGrpcApi.RegisterFenixExecutionWorkerConnectorGrpcServicesServer(fenixExecutionWorkerGrpcServer, &fenixExecutionWorkerConnectorGrpcServicesServer{logger: logger})
+	fenixExecutionWorkerGrpcApi.RegisterFenixBuilderGprcServicesServer(fenixExecutionWorkerGrpcServer, &fenixExecutionWorkerBuilderGrpcServicesServer{logger: logger})
 
 	// Register Reflection on the same server to be able for calling agents to see the methods that are offered
 	reflection.Register(fenixExecutionWorkerGrpcServer)

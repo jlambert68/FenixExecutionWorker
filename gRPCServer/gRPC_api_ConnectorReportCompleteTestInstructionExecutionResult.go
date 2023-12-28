@@ -53,7 +53,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 
 	if succeededToSend == false {
 		s.logger.WithFields(logrus.Fields{
-			"id":              "532dff93-5786-4350-96a2-ddf977ee5ec5",
+			"id":              "3f2aab0a-d482-457c-845f-7c8537ee203d",
 			"responseMessage": responseMessage,
 		}).Error("Got some error when sending 'CompleteTestInstructionExecutionResultToFenixExecutionServer'")
 	}
