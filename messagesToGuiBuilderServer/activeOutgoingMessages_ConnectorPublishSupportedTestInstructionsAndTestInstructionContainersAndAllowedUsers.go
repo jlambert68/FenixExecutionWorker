@@ -16,7 +16,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendPu
 
 	fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 		"id": "7a464b61-200e-418a-bf6a-a63d1f6608ab",
-		"supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersMessage": supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersMessage,
+		//"supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersMessage": supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersMessage,
 	}).Debug("Incoming 'SendPublishSupportedTestInstructionsAndTestInstructionContainersAndAllowedUsersToFenixGuiBuilderServer'")
 
 	defer fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
@@ -80,8 +80,8 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendPu
 	} else if returnMessage.AckNack == false {
 		// FenixTestDataSyncServer couldn't handle gPRC call
 		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-			"ID":                                  "24ebaa96-fbeb-4c51-bcd0-87179c887b15",
-			"Message from Fenix Execution Server": returnMessage.Comments,
+			"ID":                                 "24ebaa96-fbeb-4c51-bcd0-87179c887b15",
+			"Message from FenixGuiBuilderServer": returnMessage.Comments,
 		}).Error("Problem to do gRPC-call to FenixGuiBuilderServer for 'SendPublishSupportedTestInstructionsAndTestInstructionContainersAndAllowedUsersToFenixGuiBuilderServer'")
 
 		return false, returnMessage.Comments

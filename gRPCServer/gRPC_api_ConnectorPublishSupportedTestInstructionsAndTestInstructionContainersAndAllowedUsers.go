@@ -54,6 +54,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	testInstructionsAndTestInstructionContainersFromGrpcWorkerMessage, err = shared_code.
 		GenerateStandardFromGrpcWorkerMessageForTestInstructionsAndUsers(
 			supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcWorkerMessage)
+
 	if err != nil {
 		common_config.Logger.WithFields(logrus.Fields{
 			"ID":    "ac669e80-28ea-4002-97f9-a413063e83c3",

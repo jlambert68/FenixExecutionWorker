@@ -8,10 +8,11 @@ require (
 	cloud.google.com/go/iam v1.1.5
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/pat v1.0.2
-	github.com/gorilla/sessions v1.2.1
-	github.com/jlambert68/FenixGrpcApi v0.0.0-20231228125305-2a2c2ad5c8dd
+	github.com/gorilla/sessions v1.2.2
+	github.com/jlambert68/FenixConnectorAdminShared v0.0.0-20240122145928-96c121de7180
+	github.com/jlambert68/FenixGrpcApi v0.0.0-20240122123718-97a7a27310aa
 	github.com/jlambert68/FenixSyncShared v0.0.0-20231023123349-e891692cede8
-	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20231228103948-fee2b6705f73
+	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20240122135958-5f199d20b20a
 	github.com/markbates/goth v1.78.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/toqueteos/webbrowser v1.2.0
@@ -34,7 +35,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gorilla/context v1.1.2 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
-	github.com/gorilla/securecookie v1.1.1 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.11.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

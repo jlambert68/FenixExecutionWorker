@@ -2,7 +2,6 @@ package gRPCServer
 
 import (
 	"FenixExecutionWorker/common_config"
-	"FenixExecutionWorker/gcp"
 	"context"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 )
@@ -21,7 +20,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 		}).Debug("Incoming 'gRPCServer - ConnectorInformsItIsAlive'")
 
 		s.logger.WithFields(logrus.Fields{
-			"id": "87e4f4b4-ddd7-4d11-8369-4cf1ef93c131",
+			"id": "0e0f68ac-fde0-4c93-b47d-73bfb44a68bd",
 		}).Debug("Outgoing 'gRPCServer - ConnectorInformsItIsAlive'")
 	*/
 
@@ -35,56 +34,12 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 	if ackNackResponse != nil {
 
 		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
-			AckNackResponse:          ackNackResponse,
-			PubSubAuthorizationToken: "",
+			AckNackResponse: ackNackResponse,
 		}
 
 		return connectorIsReadyResponseMessage, nil
 
 	}
-
-	// Get latest authorization token or create a new one to access PubSub for Connector
-	//var appendedCtx context.Context
-	var returnAckNack bool
-	var returnMessage string
-
-	_, returnAckNack, returnMessage = gcp.Gcp.GenerateGCPAccessToken(context.Background(), gcp.GenerateTokenForPubSub)
-	if returnAckNack == false {
-		ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
-			AckNack:                      false,
-			Comments:                     returnMessage,
-			ErrorCodes:                   nil,
-			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
-		}
-
-		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
-			AckNackResponse:          ackNackResponse,
-			PubSubAuthorizationToken: "",
-		}
-	}
-
-	// Extract Token to be used by Connector to do a PubSub-Subscription
-	/*var pubSubTokenAsAny any
-	var pubSubTokenAsString string
-
-	pubSubTokenAsAny = appendedCtx.Value("authorization")
-
-	pubSubTokenAsString, ok := pubSubTokenAsAny.(string)
-	if ok == false {
-		ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
-			AckNack:                      false,
-			Comments:                     returnMessage,
-			ErrorCodes:                   nil,
-			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
-		}
-
-		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
-			AckNackResponse:          ackNackResponse,
-			PubSubAuthorizationToken: "",
-		}
-	}
-
-	*/
 
 	// Create response message to Connector
 	ackNackResponse = &fenixExecutionWorkerGrpcApi.AckNackResponse{
@@ -97,15 +52,13 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorInformsItIsAl
 	if common_config.ExecutionLocationForWorker == common_config.LocalhostNoDocker {
 		// Running Locally
 		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
-			AckNackResponse:          ackNackResponse,
-			PubSubAuthorizationToken: "Not used for now",
+			AckNackResponse: ackNackResponse,
 		}
 
 	} else {
 		// Running in GCP
 		connectorIsReadyResponseMessage = &fenixExecutionWorkerGrpcApi.ConnectorIsReadyResponseMessage{
-			AckNackResponse:          ackNackResponse,
-			PubSubAuthorizationToken: "Not used for now",
+			AckNackResponse: ackNackResponse,
 		}
 
 	}

@@ -83,7 +83,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendGe
 	} else if returnMessage.AckNack.AckNack == false {
 		// FenixBuilderServer couldn't handle gPRC call
 		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
-			"ID":                                "24ebaa96-fbeb-4c51-bcd0-87179c887b15",
+			"ID":                                "59247bdb-39ab-4fd4-9b70-191cc1e24177",
 			"Message from Fenix Builder Server": returnMessage.GetAckNack().GetComments(),
 		}).Error("Problem to do gRPC-call to FenixGuiBuilderServer for 'SendGetMessageToSignToProveCallerIdentity'")
 

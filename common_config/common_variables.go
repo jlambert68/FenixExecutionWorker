@@ -12,3 +12,7 @@ var Logger *logrus.Logger
 // TopicAndSubscriptionsExists
 // When a check that Topic, DeadLettering-Topic and their Subscriptions exist then this variable is set to true
 var TopicAndSubscriptionsExists bool
+
+// TopicAndSubscriptionsExistsMap
+// When a check that Topic, DeadLettering-Topic and their Subscriptions exist then this Map is checked
+var TopicAndSubscriptionsExistsMap map[string]bool //map[ExecutionDomainUuid]true

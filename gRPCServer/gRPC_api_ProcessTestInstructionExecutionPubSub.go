@@ -7,6 +7,7 @@ import (
 	"github.com/jlambert68/FenixSyncShared/pubSubHelpers"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
+	"os"
 )
 
 // ProcessTestInstructionExecutionPubSub
@@ -35,16 +36,13 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	returnMessage := common_config.IsCallerUsingCorrectWorkerProtoFileVersion(
 		userId,
 		fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(
-			processTestInstructionExecutionPubSubRequest.ProtoFileVersionUsedByClient))
+			processTestInstructionExecutionPubSubRequest.
+				GetDomainIdentificationAnfProtoFileVersionUsedByClient().ProtoFileVersionUsedByClient))
 	if returnMessage != nil {
 
 		// Exiting
 		return returnMessage, nil
 	}
-
-	// Create PubSub-Topic
-	var pubSubTopicToLookFor string
-	pubSubTopicToLookFor = common_config.GeneratePubSubTopicForTestInstructionExecutions()
 
 	// Convert gRPC-message into json-string
 	var processTestInstructionExecutionRequestAsJsonString string
@@ -84,6 +82,40 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		returnMessageAckNack bool
 		returnMessageString  string
 	)
+
+	// Extract 'ExecutionDomain' from 'TestInstructionExecution'
+	var thisExecutionDomainUuid string
+	thisExecutionDomainUuid = processTestInstructionExecutionPubSubRequest.
+		GetDomainIdentificationAnfProtoFileVersionUsedByClient().GetExecutionDomainUuid()
+
+	// Create PubSub-Topic
+	var pubSubTopicToLookFor string
+	pubSubTopicToLookFor = common_config.GeneratePubSubTopicNameForTestInstructionExecution(thisExecutionDomainUuid)
+
+	// Only check if Topics and Subscriptions exists of that hasn't previously been done
+	var existsInMap bool
+	_, existsInMap = common_config.TopicAndSubscriptionsExistsMap[thisExecutionDomainUuid]
+	if existsInMap == false {
+
+		// Add to Map to indicate that 'ExecutionDomain' is processed in this session
+		common_config.TopicAndSubscriptionsExistsMap[thisExecutionDomainUuid] = true
+
+		// Secure that PubSub Topic, DeadLetteringTopic and their Subscriptions exist
+		var err error
+		err = pubSubHelpers.CreateTopicDeadLettingAndSubscriptionIfNotExists(
+			pubSubTopicToLookFor, common_config.TestInstructionExecutionPubSubTopicSchema)
+		if err != nil {
+
+			common_config.Logger.WithFields(logrus.Fields{
+				"Id":                   "dbc8cc8e-d83d-42f0-a757-7f30cf3b62eb",
+				"Error":                err,
+				"pubSubTopicToLookFor": pubSubTopicToLookFor,
+			}).Error("Something went wrong when Creating 'PubSub-Topics and Subscriptions")
+
+			os.Exit(0)
+
+		}
+	}
 
 	// Publish TestInstructionExecution on PubSub
 	//returnMessageAckNack, returnMessageString, err = outgoingPubSubMessages.Publish(
