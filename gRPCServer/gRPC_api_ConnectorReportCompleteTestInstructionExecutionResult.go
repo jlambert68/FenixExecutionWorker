@@ -12,7 +12,10 @@ import (
 
 // ConnectorReportCompleteTestInstructionExecutionResult
 // When a TestInstruction has been fully executed the Execution Connector use this to inform the results of the execution result to the Worker
-func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportCompleteTestInstructionExecutionResult(ctx context.Context, finalTestInstructionExecutionResultMessage *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage) (ackNackResponse *fenixExecutionWorkerGrpcApi.AckNackResponse, err error) {
+func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportCompleteTestInstructionExecutionResult(
+	ctx context.Context,
+	finalTestInstructionExecutionResultMessage *fenixExecutionWorkerGrpcApi.FinalTestInstructionExecutionResultMessage) (
+	ackNackResponse *fenixExecutionWorkerGrpcApi.AckNackResponse, err error) {
 
 	s.logger.WithFields(logrus.Fields{
 		"id": "44addf9e-2027-4b0d-9502-787194903e06",

@@ -9,7 +9,6 @@ require (
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/pat v1.0.2
 	github.com/gorilla/sessions v1.2.2
-	github.com/jlambert68/FenixConnectorAdminShared v0.0.0-20240122145928-96c121de7180
 	github.com/jlambert68/FenixGrpcApi v0.0.0-20240122123718-97a7a27310aa
 	github.com/jlambert68/FenixSyncShared v0.0.0-20231023123349-e891692cede8
 	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20240122135958-5f199d20b20a
