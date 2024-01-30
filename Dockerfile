@@ -1,5 +1,5 @@
 # Compile stage
-FROM golang:1.19 AS build-env
+FROM golang:1.21 AS build-env
 
 ADD . /dockerdev
 WORKDIR /dockerdev
@@ -7,7 +7,7 @@ WORKDIR /dockerdev
 COPY go.* ./
 RUN go mod tidy
 
-RUN go build -o /fenixCAWorker .
+RUN go build -o /fenixWorker .
 
 
 # Final stage
@@ -17,11 +17,11 @@ FROM debian:buster
 EXPOSE 6671
 #FROM golang:1.13.8
 WORKDIR /
-COPY --from=build-env /fenixCAWorker /
+COPY --from=build-env /fenixWorker /
 #Add data/ data/
 
 #CMD ["/fenixClientServer"]
-ENTRYPOINT ["/fenixCAWorker"]
+ENTRYPOINT ["/fenixWorker"]
 
 
 
