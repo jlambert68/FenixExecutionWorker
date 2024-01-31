@@ -51,9 +51,19 @@ func (s *fenixExecutionWorkerBuilderGrpcServicesServer) BuilderServerAskWorkerTo
 	// Sign Message to prove Identity to BuilderServer
 	var hashOfSignature string
 	var hashedKeyId string
-	hashOfSignature, hashedKeyId, err = shared_code.SignMessageToProveIdentityToBuilderServer(
-		signMessageRequest.GetMessageToBeSigned(),
-		serviceAccountUsedWhenSigning)
+	if common_config.ExecutionLocationForWorker == common_config.GCP {
+		// Worker is running in GCP
+		hashOfSignature, hashedKeyId, err = shared_code.SignMessageToProveIdentityToBuilderServer(
+			signMessageRequest.GetMessageToBeSigned(),
+			serviceAccountUsedWhenSigning, true)
+
+	} else {
+		// Worker is running locally
+		hashOfSignature, hashedKeyId, err = shared_code.SignMessageToProveIdentityToBuilderServer(
+			signMessageRequest.GetMessageToBeSigned(),
+			serviceAccountUsedWhenSigning,
+			false)
+	}
 
 	if err != nil {
 

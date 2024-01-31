@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/sessions v1.2.2
 	github.com/jlambert68/FenixGrpcApi v0.0.0-20240129152625-acb237e2fb83
 	github.com/jlambert68/FenixSyncShared v0.0.0-20231023123349-e891692cede8
-	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20240131120548-f60bf60fd032
+	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20240131202504-fdcb51c7dd8d
 	github.com/markbates/goth v1.78.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/toqueteos/webbrowser v1.2.0

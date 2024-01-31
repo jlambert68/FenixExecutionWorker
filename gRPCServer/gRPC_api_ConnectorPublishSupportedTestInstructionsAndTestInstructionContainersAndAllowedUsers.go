@@ -190,9 +190,20 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	// Sign Message to prove Identity to BuilderServer
 	var hashOfSignature string
 	var hashedKeyId string
-	hashOfSignature, hashedKeyId, err = shared_code.SignMessageToProveIdentityToBuilderServer(
-		messageToSign,
-		serviceAccountUsedWhenSigning)
+	if common_config.ExecutionLocationForWorker == common_config.GCP {
+
+		hashOfSignature, hashedKeyId, err = shared_code.SignMessageToProveIdentityToBuilderServer(
+			messageToSign,
+			serviceAccountUsedWhenSigning,
+			true)
+
+	} else {
+
+		hashOfSignature, hashedKeyId, err = shared_code.SignMessageToProveIdentityToBuilderServer(
+			messageToSign,
+			serviceAccountUsedWhenSigning,
+			false)
+	}
 
 	if err != nil {
 		s.logger.WithFields(logrus.Fields{
