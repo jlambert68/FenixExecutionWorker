@@ -11,7 +11,7 @@ RUN go build -o /fenixWorker .
 
 
 # Final stage
-FROM debian:buster
+FROM debian:bookworm
 #FROM golang:1.13.8
 
 EXPOSE 6671
