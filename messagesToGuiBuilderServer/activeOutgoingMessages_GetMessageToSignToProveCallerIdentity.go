@@ -67,7 +67,8 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendGe
 
 	// Do gRPC-call
 	returnMessage, err := tempFenixGuiBuilderServerGrpcClient.GetMessageToSignToProveCallerIdentity(
-		ctx, emptyParameter)
+		ctx,
+		emptyParameter)
 
 	// Shouldn't happen
 	if err != nil {

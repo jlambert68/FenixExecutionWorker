@@ -92,7 +92,8 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SetConn
 }
 
 // Generate Google access token. Used when running in GCP
-func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) generateGCPAccessToken(ctx context.Context) (appendedCtx context.Context, returnAckNack bool, returnMessage string) {
+func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) generateGCPAccessToken(
+	ctx context.Context) (appendedCtx context.Context, returnAckNack bool, returnMessage string) {
 
 	// Only create the token if there is none, or it has expired
 	if fenixExecutionWorkerObject.gcpAccessToken == nil || fenixExecutionWorkerObject.gcpAccessToken.Expiry.Before(time.Now()) {
