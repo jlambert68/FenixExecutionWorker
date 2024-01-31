@@ -56,7 +56,8 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendGe
 
 	// Creates a new temporary client only to be used for this call
 	var tempFenixGuiBuilderServerGrpcClient fenixTestCaseBuilderServerGrpcApi.FenixTestCaseBuilderServerGrpcWorkerServicesClient
-	tempFenixGuiBuilderServerGrpcClient = fenixTestCaseBuilderServerGrpcApi.NewFenixTestCaseBuilderServerGrpcWorkerServicesClient(remoteFenixGuiBuilderServerConnection)
+	tempFenixGuiBuilderServerGrpcClient = fenixTestCaseBuilderServerGrpcApi.
+		NewFenixTestCaseBuilderServerGrpcWorkerServicesClient(remoteFenixGuiBuilderServerConnection)
 
 	// Create empty message to send
 	var emptyParameter *fenixTestCaseBuilderServerGrpcApi.EmptyParameter

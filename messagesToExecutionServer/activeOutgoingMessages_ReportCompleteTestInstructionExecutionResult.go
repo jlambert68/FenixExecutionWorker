@@ -57,10 +57,13 @@ func (fenixExecutionWorkerObject *MessagesToExecutionServerObjectStruct) SendRep
 
 	// Creates a new temporary client only to be used for this call
 	var tempFenixExecutionServerGrpcClient fenixExecutionServerGrpcApi.FenixExecutionServerGrpcServicesClient
-	tempFenixExecutionServerGrpcClient = fenixExecutionServerGrpcApi.NewFenixExecutionServerGrpcServicesClient(remoteFenixExecutionServerConnection)
+	tempFenixExecutionServerGrpcClient = fenixExecutionServerGrpcApi.
+		NewFenixExecutionServerGrpcServicesClient(remoteFenixExecutionServerConnection)
 
 	// Do gRPC-call
-	returnMessage, err := tempFenixExecutionServerGrpcClient.ReportCompleteTestInstructionExecutionResult(ctx, finalTestInstructionExecutionResultMessage)
+	returnMessage, err := tempFenixExecutionServerGrpcClient.ReportCompleteTestInstructionExecutionResult(
+		ctx,
+		finalTestInstructionExecutionResultMessage)
 
 	// Shouldn't happen
 	if err != nil {

@@ -40,7 +40,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SetCon
 		dialAttemptCounter = dialAttemptCounter + 1
 
 		//When running on GCP then use credential otherwise not
-		if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
+		if common_config.ExecutionLocationForFenixGuiBuilderServer == common_config.GCP {
 			creds := credentials.NewTLS(&tls.Config{
 				InsecureSkipVerify: true,
 			})
@@ -52,7 +52,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SetCon
 
 		// Set up connection to Fenix Execution Server
 		// When run on GCP, use credentials
-		if common_config.ExecutionLocationForFenixExecutionServer == common_config.GCP {
+		if common_config.ExecutionLocationForFenixGuiBuilderServer == common_config.GCP {
 			// Run on GCP
 			remoteFenixGuiBuilderServerConnection, err = grpc.Dial(common_config.FenixGuiBuilderServerAddressToDial, opts...)
 		} else {
@@ -95,7 +95,8 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SetCon
 }
 
 // Generate Google access token. Used when running in GCP
-func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) generateGCPAccessToken(ctx context.Context) (appendedCtx context.Context, returnAckNack bool, returnMessage string) {
+func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) generateGCPAccessToken(
+	ctx context.Context) (appendedCtx context.Context, returnAckNack bool, returnMessage string) {
 
 	// Only create the token if there is none, or it has expired
 	if fenixExecutionWorkerObject.gcpAccessToken == nil || fenixExecutionWorkerObject.gcpAccessToken.Expiry.Before(time.Now()) {
@@ -103,7 +104,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) genera
 		// Create an identity token.
 		// With a global TokenSource tokens would be reused and auto-refreshed at need.
 		// A given TokenSource is specific to the audience.
-		tokenSource, err := idtoken.NewTokenSource(ctx, "https://"+common_config.FenixExecutionServerAddress)
+		tokenSource, err := idtoken.NewTokenSource(ctx, "https://"+common_config.FenixGuiBuilderServerAddress)
 		if err != nil {
 			fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 				"ID":  "9b993a21-5019-4d87-b2df-7963d7963b2c",
