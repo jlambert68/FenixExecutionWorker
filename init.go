@@ -60,7 +60,26 @@ func init() {
 		common_config.ExecutionLocationForFenixExecutionServer = common_config.GCP
 
 	default:
-		fmt.Println("Unknown Execution location for Fenix Execution Server: " + executionLocationForWorker + ". Expected one of the following: 'LOCALHOST_NODOCKER', 'LOCALHOST_DOCKER', 'GCP'")
+		fmt.Println("Unknown Execution location for Fenix Execution Server: " + executionLocationForExecutionServer + ". Expected one of the following: 'LOCALHOST_NODOCKER', 'LOCALHOST_DOCKER', 'GCP'")
+		os.Exit(0)
+
+	}
+
+	// Get Environment variable to tell were Fenix Builder Server is running
+	var tempExecutionLocationForFenixGuiBuilderServer = mustGetenv("ExecutionLocationForFenixGuiBuilderServer")
+
+	switch executionLocationForExecutionServer {
+	case "LOCALHOST_NODOCKER":
+		common_config.ExecutionLocationForFenixGuiBuilderServer = common_config.LocalhostNoDocker
+
+	case "LOCALHOST_DOCKER":
+		common_config.ExecutionLocationForFenixGuiBuilderServer = common_config.LocalhostDocker
+
+	case "GCP":
+		common_config.ExecutionLocationForFenixGuiBuilderServer = common_config.GCP
+
+	default:
+		fmt.Println("Unknown Execution location for Fenix Builder Server: " + tempExecutionLocationForFenixGuiBuilderServer + ". Expected one of the following: 'LOCALHOST_NODOCKER', 'LOCALHOST_DOCKER', 'GCP'")
 		os.Exit(0)
 
 	}
