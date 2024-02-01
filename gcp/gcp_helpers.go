@@ -28,6 +28,7 @@ type GenerateTokenTargetType int
 const (
 	GenerateTokenForGrpcTowardsExecutionServer GenerateTokenTargetType = iota
 	GenerateTokenForPubSub
+	GenerateTokeForIamCredentials
 )
 
 func (gcp *GcpObjectStruct) GenerateGCPAccessToken(ctx context.Context, tokenTarget GenerateTokenTargetType) (
@@ -60,6 +61,18 @@ func (gcp *GcpObjectStruct) GenerateGCPAccessToken(ctx context.Context, tokenTar
 		} else {
 			// Use Authorized user
 			appendedCtx, returnAckNack, returnMessage = gcp.generateGCPAccessTokenPubSub(ctx)
+		}
+
+	case GenerateTokeForIamCredentials:
+		// Extracts a token to be used for external IAM Credentials
+		if common_config.ExecutionLocationForWorker == common_config.LocalhostNoDocker {
+
+			// Use Authorized user when targeting GCP from local
+			appendedCtx, returnAckNack, returnMessage = gcp.GenerateGCPAccessTokenForAuthorizedUserPubSub(ctx)
+
+		} else {
+			// Use Authorized user
+			appendedCtx, returnAckNack, returnMessage = gcp.generateGCPAccessTokenIamCredentials(ctx)
 		}
 	}
 
@@ -170,6 +183,63 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 
 	// Add token to GrpcServer Request.
 	appendedCtx = grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+gcp.GcpAccessTokenForExternalPubSubRequests.AccessToken)
+
+	return appendedCtx, true, ""
+
+}
+
+// Generate Google access token for IAM Credentials
+func (gcp *GcpObjectStruct) generateGCPAccessTokenIamCredentials(ctx context.Context) (appendedCtx context.Context, returnAckNack bool, returnMessage string) {
+
+	// Initiate variable if 'nil'
+	if gcp.GcpAccessTokenForServiceAccountsIamCredentials == nil {
+		gcp.GcpAccessTokenForServiceAccountsIamCredentials = &oauth2.Token{}
+	}
+
+	// Only create the token if there is none, or it has expired
+	if gcp.GcpAccessTokenForServiceAccountsIamCredentials == nil || gcp.GcpAccessTokenForServiceAccountsIamCredentials.Expiry.Before(time.Now()) {
+
+		// Create an identity token.
+		// With a global TokenSource tokens would be reused and auto-refreshed at need.
+		// A given TokenSource is specific to the audience.
+
+		tokenSource, err := idtoken.NewTokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform") //"https://www.googleapis.com/auth/pubsub")
+
+		if err != nil {
+			gcp.logger.WithFields(logrus.Fields{
+				"ID":  "ac92f245-9812-475a-94e8-27a843a96598",
+				"err": err,
+			}).Error("Couldn't generate access token")
+
+			return nil, false, "Couldn't generate access token"
+		}
+
+		token, err := tokenSource.Token()
+		if err != nil {
+			gcp.logger.WithFields(logrus.Fields{
+				"ID":  "6f335c25-b020-4748-85ab-eda80e53b9a0",
+				"err": err,
+			}).Error("Problem getting the token")
+
+			return nil, false, "Problem getting the token"
+		} else {
+			gcp.logger.WithFields(logrus.Fields{
+				"ID":    "a17e40dc-e7fc-4d7e-afbc-072a4c21850b",
+				"token": token,
+			}).Debug("Got Bearer Token")
+		}
+
+		gcp.GcpAccessTokenForServiceAccountsIamCredentials = token
+
+	}
+
+	gcp.logger.WithFields(logrus.Fields{
+		"ID": "42427b1e-af8d-4153-9963-85c36a0f58cf",
+		//"FenixExecutionWorkerObject.gcpAccessToken": gcp.gcpAccessTokenForServiceAccounts,
+	}).Debug("Will use Bearer Token")
+
+	// Add token to GrpcServer Request.
+	appendedCtx = grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+gcp.GcpAccessTokenForServiceAccountsIamCredentials.AccessToken)
 
 	return appendedCtx, true, ""
 

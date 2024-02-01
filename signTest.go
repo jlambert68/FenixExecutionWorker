@@ -1,11 +1,13 @@
 package main
 
 import (
+	"FenixExecutionWorker/common_config"
+	"FenixExecutionWorker/gcp"
 	iam_credentials "cloud.google.com/go/iam/credentials/apiv1"
 	"context"
 	"crypto/tls"
-
 	fenixSyncShared "github.com/jlambert68/FenixSyncShared"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/api/option"
 	iam_credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
 	"google.golang.org/grpc"
@@ -62,6 +64,18 @@ func signTest(
 	req := &iam_credentialspb.SignBlobRequest{
 		Name:    serviceAccountUsedForSigning,
 		Payload: data,
+	}
+
+	var (
+		returnAckNack bool
+		returnMessage string
+	)
+	ctx, returnAckNack, returnMessage = gcp.Gcp.GenerateGCPAccessToken(ctx, gcp.GenerateTokeForIamCredentials)
+	if returnAckNack == false || len(returnMessage) > 0 {
+		common_config.Logger.WithFields(logrus.Fields{
+			"ID":  "1e46ea03-6a67-4ee1-853d-408d60b440d5",
+			"err": err,
+		}).Fatal("Problem getting the token")
 	}
 
 	// Call the API to sign the data
