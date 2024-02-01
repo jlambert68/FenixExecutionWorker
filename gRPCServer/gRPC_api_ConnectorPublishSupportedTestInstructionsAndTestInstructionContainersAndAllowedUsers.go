@@ -7,6 +7,7 @@ import (
 	"fmt"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	fenixTestCaseBuilderServerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixTestCaseBuilderServer/fenixTestCaseBuilderServerGrpcApi/go_grpc_api"
+	"github.com/jlambert68/FenixSyncShared/pubSubHelpers"
 	"github.com/jlambert68/FenixTestInstructionsAdminShared/TestInstructionAndTestInstuctionContainerTypes"
 	"github.com/jlambert68/FenixTestInstructionsAdminShared/TypeAndStructs"
 	"github.com/jlambert68/FenixTestInstructionsAdminShared/shared_code"
@@ -235,6 +236,62 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	succeededToSend, responseMessage = fenixGuiBuilderObject.
 		SendPublishSupportedTestInstructionsAndTestInstructionContainersAndAllowedUsersToFenixGuiBuilderServer(
 			supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcBuilderMessage)
+
+	// if there was a success in publishing Supported TestInstructions, TestInstructionContainers And AllowedUsers
+	// to FenixGuiBuilderServer than create Topics and Subscriptions for all 'ExecutionDomains' in the message
+	if succeededToSend == true {
+		// Extract 'ExecutionDomain' from 'supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcBuilderMessage'
+		var allExecutionDomainsMap map[string]bool
+		allExecutionDomainsMap = make(map[string]bool)
+		var existInAllExecutionDomainsMap bool
+
+		// Loop all TestInstructions
+		for _, tempTestInstruction := range supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcBuilderMessage.TestInstructions.GetTestInstructionsMap() {
+
+			// Loop all TestInstructionVersions
+			for _, testInstructionVersion := range tempTestInstruction.GetTestInstructionVersions() {
+
+				// Only append enabled TestInstructions // <-- TODO To be implemented
+				_, existInAllExecutionDomainsMap = allExecutionDomainsMap[testInstructionVersion.TestInstructionInstance.BasicTestInstructionInformation.ExecutionDomainUuid]
+				if existInAllExecutionDomainsMap == false {
+					allExecutionDomainsMap[testInstructionVersion.TestInstructionInstance.BasicTestInstructionInformation.ExecutionDomainUuid] = true
+				}
+			}
+		}
+
+		// Loop all 'ExecutionDomainUuid' and check/create Topic and Subscription
+		for tempExecutionDomainUuid, _ := range allExecutionDomainsMap {
+
+			// Create PubSub-Topic
+			var pubSubTopicToLookFor string
+			pubSubTopicToLookFor = common_config.GeneratePubSubTopicNameForTestInstructionExecution(tempExecutionDomainUuid)
+
+			// Only check if Topics and Subscriptions exists of that hasn't previously been done
+			var existsInMap bool
+			_, existsInMap = common_config.TopicAndSubscriptionsExistsMap[tempExecutionDomainUuid]
+			if existsInMap == false {
+
+				// Add to Map to indicate that 'ExecutionDomain' is processed in this session
+				common_config.TopicAndSubscriptionsExistsMap[tempExecutionDomainUuid] = true
+
+				// Secure that PubSub Topic, DeadLetteringTopic and their Subscriptions exist
+				var err error
+				err = pubSubHelpers.CreateTopicDeadLettingAndSubscriptionIfNotExists(
+					pubSubTopicToLookFor, common_config.TestInstructionExecutionPubSubTopicSchema)
+				if err != nil {
+
+					common_config.Logger.WithFields(logrus.Fields{
+						"Id":                   "dbc8cc8e-d83d-42f0-a757-7f30cf3b62eb",
+						"Error":                err,
+						"pubSubTopicToLookFor": pubSubTopicToLookFor,
+					}).Error("Something went wrong when Creating 'PubSub-Topics and Subscriptions")
+
+					os.Exit(0)
+
+				}
+			}
+		}
+	}
 
 	if succeededToSend == false {
 		s.logger.WithFields(logrus.Fields{
