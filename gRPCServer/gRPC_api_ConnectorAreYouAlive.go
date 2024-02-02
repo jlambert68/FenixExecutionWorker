@@ -2,13 +2,15 @@ package gRPCServer
 
 import (
 	"FenixExecutionWorker/common_config"
+	"fmt"
 	fenixExecutionWorkerGrpcApi "github.com/jlambert68/FenixGrpcApi/FenixExecutionServer/fenixExecutionWorkerGrpcApi/go_grpc_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
+	"time"
 )
 
 // AreYouAlive - *********************************************************************
-//Anyone can check if Fenix Execution Worker server is alive with this service, ushould be used to check serves for Connector
+// Anyone can check if Fenix Execution Worker server is alive with this service, ushould be used to check serves for Connector
 func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorAreYouAlive(ctx context.Context, emptyParameter *fenixExecutionWorkerGrpcApi.EmptyParameter) (*fenixExecutionWorkerGrpcApi.AckNackResponse, error) {
 
 	s.logger.WithFields(logrus.Fields{
@@ -21,7 +23,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorAreYouAlive(c
 
 	ackNackResponse := &fenixExecutionWorkerGrpcApi.AckNackResponse{
 		AckNack:                      true,
-		Comments:                     "I'am alive.",
+		Comments:                     fmt.Sprintf("I'am alive and the time is %s", time.Now().String()),
 		ErrorCodes:                   nil,
 		ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
 	}

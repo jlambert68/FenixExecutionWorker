@@ -288,6 +288,12 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 
 					os.Exit(0)
 
+				} else {
+					common_config.Logger.WithFields(logrus.Fields{
+						"Id":                   "68a9b1c8-1020-433a-8d10-eae6090e6fc2",
+						"Error":                err,
+						"pubSubTopicToLookFor": pubSubTopicToLookFor,
+					}).Debug("Created, or verified existence of, 'PubSub-Topics and Subscriptions")
 				}
 			}
 		}
