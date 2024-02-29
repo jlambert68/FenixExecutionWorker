@@ -40,6 +40,62 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 	var fenixExecutionWorkerObject *messagesToExecutionServer.MessagesToExecutionServerObjectStruct
 	fenixExecutionWorkerObject = &messagesToExecutionServer.MessagesToExecutionServerObjectStruct{Logger: s.logger}
 
+	// Create ResponseVariables
+	var responseVariablesGrpc []*fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage_ResponseVariableMessage
+	for _, tempResponseVariable := range finalTestInstructionExecutionResultMessage.GetResponseVariables() {
+
+		var responseVariableGrpc *fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage_ResponseVariableMessage
+		responseVariableGrpc = &fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage_ResponseVariableMessage{
+			ResponseVariableUuid:          tempResponseVariable.ResponseVariableUuid,
+			ResponseVariableName:          tempResponseVariable.GetResponseVariableName(),
+			ResponseVariableTypeUuid:      tempResponseVariable.GetResponseVariableTypeUuid(),
+			ResponseVariableTypeName:      tempResponseVariable.GetResponseVariableTypeName(),
+			ResponseVariableValueAsString: tempResponseVariable.GetResponseVariableValueAsString(),
+		}
+
+		// Append to list of Response Variables for ExecutionServer-gRPC
+		responseVariablesGrpc = append(responseVariablesGrpc, responseVariableGrpc)
+	}
+
+	// Create LogPosts
+	var logPostsGrpc []*fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage_LogPostMessage
+	for _, tempLogPost := range finalTestInstructionExecutionResultMessage.GetLogPosts() {
+
+		// Create FoundVersusExpectedValueForVariable
+		var foundVersusExpectedValueForVariablesGrpc []*fenixExecutionServerGrpcApi.
+			FinalTestInstructionExecutionResultMessage_LogPostMessage_FoundVersusExpectedValueForVariableMessage
+
+		for _, tempFoundVersusExpectedValueForVariable := range tempLogPost.GetFoundVersusExpectedValueForVariable() {
+
+			var foundVersusExpectedValueForVariableGrpc = &fenixExecutionServerGrpcApi.
+				FinalTestInstructionExecutionResultMessage_LogPostMessage_FoundVersusExpectedValueForVariableMessage{
+				VariableName:        tempFoundVersusExpectedValueForVariable.GetVariableName(),
+				VariableDescription: tempFoundVersusExpectedValueForVariable.GetVariableDescription(),
+				FoundVersusExpectedValue: &fenixExecutionServerGrpcApi.
+					FinalTestInstructionExecutionResultMessage_LogPostMessage_FoundVersusExpectedValueMessage{
+					FoundValue:    tempFoundVersusExpectedValueForVariable.GetFoundVersusExpectedValue().GetFoundValue(),
+					ExpectedValue: tempFoundVersusExpectedValueForVariable.GetFoundVersusExpectedValue().GetExpectedValue(),
+				},
+			}
+
+			// Append to list of Expected vs Found values for variable
+			foundVersusExpectedValueForVariablesGrpc = append(foundVersusExpectedValueForVariablesGrpc, foundVersusExpectedValueForVariableGrpc)
+
+		}
+
+		var logPostGrpc *fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage_LogPostMessage
+		logPostGrpc = &fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage_LogPostMessage{
+			LogPostUuid:                         tempLogPost.GetLogPostUuid(),
+			LogPostTimeStamp:                    tempLogPost.GetLogPostTimeStamp(),
+			LogPostStatus:                       fenixExecutionServerGrpcApi.LogPostStatusEnum(tempLogPost.GetLogPostStatus()),
+			LogPostText:                         tempLogPost.GetLogPostText(),
+			FoundVersusExpectedValueForVariable: foundVersusExpectedValueForVariablesGrpc,
+		}
+
+		// Append to list of Response Variables for ExecutionServer-gRPC
+		logPostsGrpc = append(logPostsGrpc, logPostGrpc)
+	}
+
 	// Create 'FinalTestInstructionExecutionResultMessage'
 	var finalTestInstructionExecutionResultToServerMessage *fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage
 	finalTestInstructionExecutionResultToServerMessage = &fenixExecutionServerGrpcApi.FinalTestInstructionExecutionResultMessage{
@@ -47,9 +103,14 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 			DomainUuid:                   finalTestInstructionExecutionResultMessage.ClientSystemIdentification.DomainUuid,
 			ProtoFileVersionUsedByClient: fenixExecutionServerGrpcApi.CurrentFenixExecutionServerProtoFileVersionEnum(common_config.GetHighestFenixExecutionServerProtoFileVersion()),
 		},
-		TestInstructionExecutionUuid:         finalTestInstructionExecutionResultMessage.TestInstructionExecutionUuid,
-		TestInstructionExecutionStatus:       fenixExecutionServerGrpcApi.TestInstructionExecutionStatusEnum(finalTestInstructionExecutionResultMessage.TestInstructionExecutionStatus),
-		TestInstructionExecutionEndTimeStamp: finalTestInstructionExecutionResultMessage.TestInstructionExecutionEndTimeStamp,
+		TestInstructionExecutionUuid:    finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionUuid(),
+		TestInstructionExecutionVersion: finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionVersion(),
+		TestInstructionExecutionStatus: fenixExecutionServerGrpcApi.TestInstructionExecutionStatusEnum(
+			finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionStatus()),
+		TestInstructionExecutionStartTimeStamp: finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionStartTimeStamp(),
+		TestInstructionExecutionEndTimeStamp:   finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionEndTimeStamp(),
+		ResponseVariables:                      responseVariablesGrpc,
+		LogPosts:                               logPostsGrpc,
 	}
 
 	succeededToSend, responseMessage := fenixExecutionWorkerObject.SendReportCompleteTestInstructionExecutionResultToFenixExecutionServer(finalTestInstructionExecutionResultToServerMessage)
