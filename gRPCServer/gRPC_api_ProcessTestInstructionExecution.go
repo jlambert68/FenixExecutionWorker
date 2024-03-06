@@ -185,7 +185,7 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 	// Create data for 'processTestInstructionExecutionReversedResponseChannelMap'
 	var processTestInstructionExecutionReversedResponseMapData *processTestInstructionExecutionReversedResponseStruct
 	processTestInstructionExecutionReversedResponseMapData = &processTestInstructionExecutionReversedResponseStruct{
-		testInstructionExecutionUuid:                                    processTestInstructionExecutionRequest.TestInstruction.TestInstructionUuid,
+		testInstructionExecutionUuid:                                    processTestInstructionExecutionRequest.TestInstruction.TestInstructionExecutionUuid,
 		processTestInstructionExecutionReversedResponseChannelReference: &processTestInstructionExecutionReversedResponseChannel,
 		savedInMapTimeStamp:                                             time.Now(),
 	}

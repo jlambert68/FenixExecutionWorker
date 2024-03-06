@@ -150,7 +150,8 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorRequestForPro
 		// Create keep alive message
 		ProcessTestInstructionExecutionReveredRequest_TestInstructionExecutionMessage := fenixExecutionWorkerGrpcApi.ProcessTestInstructionExecutionReveredRequest_TestInstructionExecutionMessage{
 			TestInstructionExecutionUuid: "KeepAlive",
-			TestInstructionUuid:          "KeepAlive",
+			TestInstructionOriginalUuid:  "KeepAlive",
+			MatureTestInstructionUuid:    "KeepAlive",
 			TestInstructionName:          "KeepAlive",
 			MajorVersionNumber:           0,
 			MinorVersionNumber:           0,

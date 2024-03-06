@@ -105,6 +105,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 		},
 		TestInstructionExecutionUuid:    finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionUuid(),
 		TestInstructionExecutionVersion: finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionVersion(),
+		MatureTestInstructionUuid:       finalTestInstructionExecutionResultMessage.GetMatureTestInstructionUuid(),
 		TestInstructionExecutionStatus: fenixExecutionServerGrpcApi.TestInstructionExecutionStatusEnum(
 			finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionStatus()),
 		TestInstructionExecutionStartTimeStamp: finalTestInstructionExecutionResultMessage.GetTestInstructionExecutionStartTimeStamp(),
