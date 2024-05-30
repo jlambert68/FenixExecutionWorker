@@ -110,8 +110,8 @@ func (gcp *GcpObjectStruct) generateGCPAccessToken(ctx context.Context) (appende
 			return nil, false, "Problem getting the token"
 		} else {
 			gcp.logger.WithFields(logrus.Fields{
-				"ID": "fee61402-aefa-4d4a-87ff-04b02c055366",
-				//"token": token,
+				"ID":    "fee61402-aefa-4d4a-87ff-04b02c055366",
+				"token": token,
 			}).Debug("Got Bearer Token")
 		}
 
@@ -120,8 +120,8 @@ func (gcp *GcpObjectStruct) generateGCPAccessToken(ctx context.Context) (appende
 	}
 
 	gcp.logger.WithFields(logrus.Fields{
-		"ID": "9bfd3d3a-7155-4f72-9cbc-e051f4544135",
-		//"FenixExecutionWorkerObject.gcpAccessToken": gcp.gcpAccessTokenForServiceAccounts,
+		"ID":                                  "9bfd3d3a-7155-4f72-9cbc-e051f4544135",
+		"gcp.gcpAccessTokenForServiceAccount": gcp.gcpAccessTokenForServiceAccounts,
 	}).Debug("Will use Bearer Token")
 
 	// Add token to GrpcServer Request.
@@ -178,7 +178,8 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenPubSub(ctx context.Context) (a
 
 	gcp.logger.WithFields(logrus.Fields{
 		"ID": "42427b1e-af8d-4153-9963-85c36a0f58cf",
-		//"FenixExecutionWorkerObject.gcpAccessToken": gcp.gcpAccessTokenForServiceAccounts,
+		"gcp.GcpAccessTokenForExternalPubSubRequests":             gcp.GcpAccessTokenForExternalPubSubRequests,
+		"gcp.GcpAccessTokenForExternalPubSubRequests.AccessToken": gcp.GcpAccessTokenForExternalPubSubRequests.AccessToken,
 	}).Debug("Will use Bearer Token")
 
 	// Add token to GrpcServer Request.
@@ -207,7 +208,7 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenIamCredentials(ctx context.Con
 
 		if err != nil {
 			gcp.logger.WithFields(logrus.Fields{
-				"ID":  "ac92f245-9812-475a-94e8-27a843a96598",
+				"ID":  "21394809-6175-40bf-b45e-7bce4a77cbdf",
 				"err": err,
 			}).Error("Couldn't generate access token")
 
@@ -217,14 +218,14 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenIamCredentials(ctx context.Con
 		token, err := tokenSource.Token()
 		if err != nil {
 			gcp.logger.WithFields(logrus.Fields{
-				"ID":  "6f335c25-b020-4748-85ab-eda80e53b9a0",
+				"ID":  "85841308-751d-4d16-bc27-c6448da6c399",
 				"err": err,
 			}).Error("Problem getting the token")
 
 			return nil, false, "Problem getting the token"
 		} else {
 			gcp.logger.WithFields(logrus.Fields{
-				"ID":    "a17e40dc-e7fc-4d7e-afbc-072a4c21850b",
+				"ID":    "63c06d0d-ce49-482c-bbb6-73e5413c717c",
 				"token": token,
 			}).Debug("Got Bearer Token")
 		}
@@ -234,8 +235,9 @@ func (gcp *GcpObjectStruct) generateGCPAccessTokenIamCredentials(ctx context.Con
 	}
 
 	gcp.logger.WithFields(logrus.Fields{
-		"ID": "42427b1e-af8d-4153-9963-85c36a0f58cf",
-		//"FenixExecutionWorkerObject.gcpAccessToken": gcp.gcpAccessTokenForServiceAccounts,
+		"ID": "ef9487d9-69e5-4690-acdd-d6f18ff3f207",
+		"gcp.GcpAccessTokenForServiceAccountsIamCredentials":             gcp.GcpAccessTokenForServiceAccountsIamCredentials,
+		"gcp.GcpAccessTokenForServiceAccountsIamCredentials.AccessToken": gcp.GcpAccessTokenForServiceAccountsIamCredentials.AccessToken,
 	}).Debug("Will use Bearer Token")
 
 	// Add token to GrpcServer Request.

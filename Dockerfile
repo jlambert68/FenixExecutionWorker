@@ -9,7 +9,6 @@ RUN go mod tidy
 
 RUN go build -o /fenixWorker .
 
-
 # Final stage
 FROM debian:bookworm
 #FROM golang:1.13.8
