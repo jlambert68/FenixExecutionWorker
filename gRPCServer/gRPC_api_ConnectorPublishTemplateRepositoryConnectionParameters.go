@@ -69,11 +69,12 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishTempla
 
 		templateRepositoryConnectionParametersToTestCaseBuilderServer = &fenixTestCaseBuilderServerGrpcApi.
 			TemplateRepositoryConnectionParameters{
-			RepositoryApiUrl: templateRepositoryConnectionParameters.RepositoryApiUrl,
-			RepositoryOwner:  templateRepositoryConnectionParameters.RepositoryOwner,
-			RepositoryName:   templateRepositoryConnectionParameters.RepositoryName,
-			RepositoryPath:   templateRepositoryConnectionParameters.RepositoryPath,
-			GitHubApiKey:     templateRepositoryConnectionParameters.GitHubApiKey,
+			RepositoryApiUrlName: templateRepositoryConnectionParameters.RepositoryApiUrlName,
+			RepositoryApiUrl:     templateRepositoryConnectionParameters.RepositoryApiUrl,
+			RepositoryOwner:      templateRepositoryConnectionParameters.RepositoryOwner,
+			RepositoryName:       templateRepositoryConnectionParameters.RepositoryName,
+			RepositoryPath:       templateRepositoryConnectionParameters.RepositoryPath,
+			GitHubApiKey:         templateRepositoryConnectionParameters.GitHubApiKey,
 		}
 
 		allTemplateRepositories = append(allTemplateRepositories, templateRepositoryConnectionParametersToTestCaseBuilderServer)
