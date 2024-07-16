@@ -187,13 +187,13 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishTestDa
 		HashOfSignature:   hashOfSignature,
 		HashedKeyId:       hashedKeyId,
 	}
-	allTemplateRepositoryConnectionParametersToBuilderServer.
+	testDataFromSimpleTestDataAreaFileMessageToBuilderServer.
 		SignedMessageByWorkerServiceAccount = signedMessageByWorkerServiceAccountMessage
 
 	// Publish Supported template repository connection parameters to TestCaseBuilderServer
 	succeededToSend, responseMessage = fenixGuiBuilderObject.
-		SendConnectorPublishTemplateRepositoryConnectionParametersToFenixGuiBuilderServer(
-			allTemplateRepositoryConnectionParametersToBuilderServer)
+		SendConnectorPublishTestDataFromSimpleTestDataAreaFileMessageToBuilderServer(
+			testDataFromSimpleTestDataAreaFileMessageToBuilderServer)
 
 	// Create Error Codes
 	var errorCodes []fenixExecutionWorkerGrpcApi.ErrorCodesEnum
