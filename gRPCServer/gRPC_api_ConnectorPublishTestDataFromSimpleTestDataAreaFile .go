@@ -114,10 +114,70 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishTestDa
 			ImportantDataInFileSha256Hash: testDataFromSimpleTestDataAreaFile.ImportantDataInFileSha256Hash,
 		}
 
-		testDataFromOneSimpleTestDataAreaFileMessage = append(testDataFromOneSimpleTestDataAreaFileMessage, oneSimpleTestDataAreaFileMessage)
+		// Add 'HeadersForTestDataFromOneSimpleTestDataAreaFile'
+		var tempHeadersForTestDataFromOneSimpleTestDataAreaFiles []*fenixTestCaseBuilderServerGrpcApi.
+			HeaderForTestDataFromOneSimpleTestDataAreaFileMessage
+
+		for _, tempHeadersForTestDataFromOneSimpleTestDataAreaFileFromConnector := range testDataFromSimpleTestDataAreaFile.
+			GetHeadersForTestDataFromOneSimpleTestDataAreaFile() {
+
+			// Create the Header towards GuiServer
+			var tempHeadersForTestDataFromOneSimpleTestDataAreaFile *fenixTestCaseBuilderServerGrpcApi.
+				HeaderForTestDataFromOneSimpleTestDataAreaFileMessage
+
+			tempHeadersForTestDataFromOneSimpleTestDataAreaFile = &fenixTestCaseBuilderServerGrpcApi.
+				HeaderForTestDataFromOneSimpleTestDataAreaFileMessage{
+				ShouldHeaderActAsFilter: tempHeadersForTestDataFromOneSimpleTestDataAreaFileFromConnector.
+					GetShouldHeaderActAsFilter(),
+				HeaderName: tempHeadersForTestDataFromOneSimpleTestDataAreaFileFromConnector.
+					GetHeaderName(),
+				HeaderUiName: tempHeadersForTestDataFromOneSimpleTestDataAreaFileFromConnector.
+					GetHeaderUiName(),
+			}
+
+			// Add Header to slice of header
+			tempHeadersForTestDataFromOneSimpleTestDataAreaFiles = append(
+				tempHeadersForTestDataFromOneSimpleTestDataAreaFiles,
+				tempHeadersForTestDataFromOneSimpleTestDataAreaFile)
+
+		}
+
+		// Add Headers to message towards GuiServer
+		oneSimpleTestDataAreaFileMessage.HeadersForTestDataFromOneSimpleTestDataAreaFile =
+			tempHeadersForTestDataFromOneSimpleTestDataAreaFiles
+
+		// Add 'SimpleTestDataRows'
+		var tempSimpleTestDataRowForTestDataFromOneSimpleTestDataAreaFiles []*fenixTestCaseBuilderServerGrpcApi.
+			SimpleTestDataRowMessage
+
+		for _, tempSimpleTestDataRowsFromConnector := range testDataFromSimpleTestDataAreaFile.GetSimpleTestDataRows() {
+
+			// Create the Header towards GuiServer
+			var tempSimpleTestDataRowForTestDataFromOneSimpleTestDataAreaFile *fenixTestCaseBuilderServerGrpcApi.
+				SimpleTestDataRowMessage
+
+			tempSimpleTestDataRowForTestDataFromOneSimpleTestDataAreaFile = &fenixTestCaseBuilderServerGrpcApi.
+				SimpleTestDataRowMessage{
+				TestDataValue: tempSimpleTestDataRowsFromConnector.GetTestDataValue()}
+
+			// Add TestDataRow to slice of TestDataRows
+			tempSimpleTestDataRowForTestDataFromOneSimpleTestDataAreaFiles = append(
+				tempSimpleTestDataRowForTestDataFromOneSimpleTestDataAreaFiles,
+				tempSimpleTestDataRowForTestDataFromOneSimpleTestDataAreaFile)
+
+		}
+
+		// Add Headers to message towards GuiServer
+		oneSimpleTestDataAreaFileMessage.SimpleTestDataRows =
+			tempSimpleTestDataRowForTestDataFromOneSimpleTestDataAreaFiles
+
+		// Add one full TestDataFile to slice of all TestDataFiles
+		testDataFromOneSimpleTestDataAreaFileMessage = append(testDataFromOneSimpleTestDataAreaFileMessage,
+			oneSimpleTestDataAreaFileMessage)
 	}
 	// Add converted messages to outgoing message to BuilderServer
-	testDataFromSimpleTestDataAreaFileMessageToBuilderServer.TestDataFromSimpleTestDataAreaFiles = testDataFromOneSimpleTestDataAreaFileMessage
+	testDataFromSimpleTestDataAreaFileMessageToBuilderServer.
+		TestDataFromSimpleTestDataAreaFiles = testDataFromOneSimpleTestDataAreaFileMessage
 
 	// Get Message to sign to prove identity
 	succeededToSend, responseMessage, messageToSign := fenixGuiBuilderObject.
@@ -131,10 +191,11 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishTestDa
 
 		// Generate response
 		returnMessage = &fenixExecutionWorkerGrpcApi.AckNackResponse{
-			AckNack:                      succeededToSend,
-			Comments:                     fmt.Sprintf("Messagage from BuilderServer: '%s'", responseMessage),
-			ErrorCodes:                   nil,
-			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(common_config.GetHighestExecutionWorkerProtoFileVersion()),
+			AckNack:    succeededToSend,
+			Comments:   fmt.Sprintf("Messagage from BuilderServer: '%s'", responseMessage),
+			ErrorCodes: nil,
+			ProtoFileVersionUsedByClient: fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(
+				common_config.GetHighestExecutionWorkerProtoFileVersion()),
 		}
 
 		return returnMessage, nil
