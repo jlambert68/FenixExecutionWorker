@@ -10,10 +10,10 @@ require (
 	cloud.google.com/go/iam v1.2.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/pat v1.0.2
-	github.com/gorilla/sessions v1.3.0
+	github.com/gorilla/sessions v1.2.2
 	github.com/jlambert68/FenixGrpcApi v0.0.0-20240828105603-3ccecfdadf07
 	github.com/jlambert68/FenixSyncShared v0.0.0-20240215140904-db0840b5d70a
-	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20240828110725-80c75b00f7a0
+	github.com/jlambert68/FenixTestInstructionsAdminShared v0.0.0-20240829085726-37164a2e9444
 	github.com/markbates/goth v1.80.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/toqueteos/webbrowser v1.2.0
