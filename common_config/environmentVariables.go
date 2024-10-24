@@ -48,7 +48,7 @@ var (
 	UsePubSubWhenSendingTestInstructionExecutions bool
 	LocalServiceAccountPath                       string
 
-	ThisDomainsUuid                         string
+	//ThisDomainsUuid                         string
 	TestInstructionExecutionPubSubTopicBase string
 
 	// TestInstructionExecutionPubSubTopicSchema

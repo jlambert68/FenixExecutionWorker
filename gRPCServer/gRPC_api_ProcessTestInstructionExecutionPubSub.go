@@ -83,6 +83,11 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 		returnMessageString  string
 	)
 
+	// Extract 'Domain' from 'TestInstructionExecution'
+	var thisDomainUuid string
+	thisDomainUuid = processTestInstructionExecutionPubSubRequest.
+		GetDomainIdentificationAnfProtoFileVersionUsedByClient().GetDomainUuid()
+
 	// Extract 'ExecutionDomain' from 'TestInstructionExecution'
 	var thisExecutionDomainUuid string
 	thisExecutionDomainUuid = processTestInstructionExecutionPubSubRequest.
@@ -90,7 +95,8 @@ func (s *fenixExecutionWorkerGrpcServicesServer) ProcessTestInstructionExecution
 
 	// Create PubSub-Topic
 	var pubSubTopicToLookFor string
-	pubSubTopicToLookFor = common_config.GeneratePubSubTopicNameForTestInstructionExecution(thisExecutionDomainUuid)
+	pubSubTopicToLookFor = common_config.GeneratePubSubTopicNameForTestInstructionExecution(
+		thisDomainUuid, thisExecutionDomainUuid)
 
 	// Only check if Topics and Subscriptions exists of that hasn't previously been done
 	var existsInMap bool

@@ -65,10 +65,15 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 			"in 'ConnectorPublishSupportedTestInstructionsAndTestInstructionContainersAndAllowedUsers'")
 	}
 
+	// Extract a DomainUuid for the Connector
+	var domainUuid string
+	domainUuid = supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersGrpcWorkerMessage.
+		GetConnectorDomain().GetConnectorsDomainUUID()
+
 	// Verify recreated Hashes from gRPC-Worker-message
 	var errorSliceWorker []error
 	errorSliceWorker = shared_code.VerifyTestInstructionAndTestInstructionContainerAndUsersMessageHashesAndDomain(
-		TypeAndStructs.DomainUUIDType(common_config.ThisDomainsUuid),
+		TypeAndStructs.DomainUUIDType(domainUuid),
 		testInstructionsAndTestInstructionContainersFromGrpcWorkerMessage)
 	if errorSliceWorker != nil {
 		common_config.Logger.WithFields(logrus.Fields{
@@ -123,7 +128,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	// Verify recreated Hashes from gRPC-Builder-message
 	var errorSliceBuilder []error
 	errorSliceBuilder = shared_code.VerifyTestInstructionAndTestInstructionContainerAndUsersMessageHashesAndDomain(
-		TypeAndStructs.DomainUUIDType(common_config.ThisDomainsUuid),
+		TypeAndStructs.DomainUUIDType(domainUuid),
 		testInstructionsAndTestInstructionContainersFromGrpcBuilderMessage)
 
 	// If there are error then loop and concatenate error message to be sent to user
@@ -196,7 +201,8 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 
 			// Create PubSub-Topic
 			var pubSubTopicToLookFor string
-			pubSubTopicToLookFor = common_config.GeneratePubSubTopicNameForTestInstructionExecution(tempExecutionDomainUuid)
+			pubSubTopicToLookFor = common_config.GeneratePubSubTopicNameForTestInstructionExecution(
+				domainUuid, tempExecutionDomainUuid)
 
 			// Only check if Topics and Subscriptions exists of that hasn't previously been done
 			var existsInMap bool

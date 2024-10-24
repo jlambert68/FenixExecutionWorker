@@ -161,7 +161,7 @@ func init() {
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", common_config.LocalServiceAccountPath)
 
 	// Extract environment variable for 'ThisDomainsUuid'
-	common_config.ThisDomainsUuid = mustGetenv("ThisDomainsUuid")
+	//common_config.ThisDomainsUuid = mustGetenv("ThisDomainsUuid")
 
 	// Extract environment variable for 'TestInstructionExecutionPubSubTopicBase'
 	common_config.TestInstructionExecutionPubSubTopicBase = mustGetenv("TestInstructionExecutionPubSubTopicBase")
@@ -170,6 +170,6 @@ func init() {
 	common_config.TestInstructionExecutionPubSubTopicSchema = mustGetenv("TestInstructionExecutionPubSubTopicSchema")
 
 	// Extract environment variable for 'ServiceAccountUsedForSigningMessage '
-	common_config.ServiceAccountUsedForSigningMessage = mustGetenv("ServiceAccountUsedForSigningMessage")
+	//common_config.ServiceAccountUsedForSigningMessage = mustGetenv("ServiceAccountUsedForSigningMessage")
 
 }
