@@ -17,26 +17,27 @@ ExecutionWorker has the responsibility to feed TestInstructions to be executed t
 Another responsibility is to receive published available TestInstructions, TestInstructionContainers, Allowed Users and Template-address.
 ![Fenix Inception - Worker](./Documentation/FenixInception-Overview-NonDetailed-Worker.png "Fenix Inception - Worker")
 
-The following environment variable is needed for ExecutionWorker to be able to run.
+The following environment variable is needed for ExecutionWorker to be able to run locally.
 
-| Environment variable                          | Example value                                                           | comment                                     |
-|-----------------------------------------------|-------------------------------------------------------------------------|---------------------------------------------|
-| AuthClientId                                  | 46368345345345-au53543bleflkfs03423dfs.apps.googleusercontent.com       |                                             |
-| AuthClientSecret                              | UYGJIU-KHskjshd7HDK7sdfsdf                                              |                                             |
-| ExecutionLocationForFenixGuiBuilderServer     | GCP                                                                     | LOCALHOST_NODOCKER, LOCALHOST_DOCKER or GCP |
-| ExecutionLocationForFenixTestExecutionServer  | GCP                                                                     | LOCALHOST_NODOCKER, LOCALHOST_DOCKER or GCP |
-| ExecutionLocationForWorker                    | GCP                                                                     | LOCALHOST_NODOCKER, LOCALHOST_DOCKER or GCP |
-| ExecutionWorkerPort                           | 6671                                                                    |                                             |
-| FenixExecutionServerAddress                   | fenixexecutionserver-must-be-logged-in-ffafweeerg-lz.a.run.app          |                                             |
-| FenixExecutionServerPort                      | 443                                                                     |                                             |
-| FenixGuiBuilderServerAddress                  | fenixguitestcasebuilderserver-must-be-logged-in-ffwegrgwrg-lz.a.run.app |                                             |
-| FenixGuiBuilderServerPort                     | 443                                                                     |                                             |
-| GcpProject                                    | mycloud-run-project                                                     |                                             |
-| LocalServiceAccountPath                       | #                                                                       |                                             |
-| LoggingLevel                                  | DebugLevel                                                              | DebugLevel, InfoLevel                       |
-| TestInstructionExecutionPubSubTopicBase       | ProcessTestInstructionExecutionRequest                                  |                                             |
-| TestInstructionExecutionPubSubTopicSchema     | ProcessTestInstructionExecutionRequestSchema                            |                                             |
-| UsePubSubWhenSendingTestInstructionExecutions | true                                                                    |                                             |
+| Environment variable                          | Example value                                                            | comment                                     |
+|-----------------------------------------------|--------------------------------------------------------------------------|---------------------------------------------|
+| AuthClientId                                  | 944682210385-jokmr7b6fdllr6k76kfo2hagic7kfvnt.apps.googleusercontent.com |                                             |
+| AuthClientSecret                              | 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                                      |                                             |
+| ExecutionLocationForFenixGuiBuilderServer     | LOCALHOST_NODOCKER                                                       | LOCALHOST_NODOCKER, LOCALHOST_DOCKER or GCP |
+| ExecutionLocationForFenixTestExecutionServer  | LOCALHOST_NODOCKER                                                       | LOCALHOST_NODOCKER, LOCALHOST_DOCKER or GCP |
+| ExecutionLocationForWorker                    | LOCALHOST_NODOCKER                                                       | LOCALHOST_NODOCKER, LOCALHOST_DOCKER or GCP |
+| ExecutionWorkerPort                           | 6671                                                                     |                                             |
+| FenixExecutionServerAddress                   | 127.0.0.1                                                                |                                             |
+| FenixExecutionServerPort                      | 6670                                                                     |                                             |
+| FenixGuiBuilderServerAddress                  | fenixguitestcasebuilderserver-must-be-logged-in-ffwegrgwrg-lz.a.run.app  |                                             |
+| FenixGuiBuilderServerPort                     | 443                                                                      |                                             |
+| GcpProject                                    | mycloud-run-project                                                      |                                             |
+| LocalServiceAccountPath                       | #                                                                        |                                             |
+| LoggingLevel                                  | DebugLevel                                                               | DebugLevel, InfoLevel                       |
+| TestInstructionExecutionPubSubTopicBase       | ProcessTestInstructionExecutionRequest                                   |                                             |
+| TestInstructionExecutionPubSubTopicSchema     | ProcessTestInstructionExecutionRequestSchema                             |                                             |
+| UsePubSubWhenSendingTestInstructionExecutions | true                                                                     |                                             |
+
 
 
 
