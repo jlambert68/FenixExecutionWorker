@@ -73,8 +73,10 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorReportComplet
 				VariableDescription: tempFoundVersusExpectedValueForVariable.GetVariableDescription(),
 				FoundVersusExpectedValue: &fenixExecutionServerGrpcApi.
 					FinalTestInstructionExecutionResultMessage_LogPostMessage_FoundVersusExpectedValueMessage{
-					FoundValue:    tempFoundVersusExpectedValueForVariable.GetFoundVersusExpectedValue().GetFoundValue(),
-					ExpectedValue: tempFoundVersusExpectedValueForVariable.GetFoundVersusExpectedValue().GetExpectedValue(),
+					VariableName:        tempFoundVersusExpectedValueForVariable.GetVariableName(),
+					VariableDescription: tempFoundVersusExpectedValueForVariable.GetVariableDescription(),
+					FoundValue:          tempFoundVersusExpectedValueForVariable.GetFoundVersusExpectedValue().GetFoundValue(),
+					ExpectedValue:       tempFoundVersusExpectedValueForVariable.GetFoundVersusExpectedValue().GetExpectedValue(),
 				},
 			}
 
