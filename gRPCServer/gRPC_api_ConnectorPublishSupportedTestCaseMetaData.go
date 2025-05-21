@@ -14,7 +14,7 @@ import (
 // Connector publish supported TestCaseMetaData to Worker
 func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSupportedMetaData(
 	ctx context.Context,
-	supportedTestCaseMetaDataMessage *fenixTestCaseBuilderServerGrpcApi.SupportedTestCaseMetaData) (
+	supportedTestCaseMetaDataMessage *fenixExecutionWorkerGrpcApi.SupportedTestCaseMetaData) (
 	returnMessage *fenixExecutionWorkerGrpcApi.AckNackResponse,
 	err error) {
 
