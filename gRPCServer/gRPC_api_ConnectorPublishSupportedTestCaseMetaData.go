@@ -55,8 +55,9 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 			ProtoFileVersionUsedByClient: fenixTestCaseBuilderServerGrpcApi.
 				CurrentFenixTestCaseBuilderProtoFileVersionEnum(common_config.GetHighestBuilderServerProtoFileVersion()),
 		},
-		SupportedMetaDataAsJson: supportedTestCaseMetaDataMessage.GetSupportedMetaDataAsJson(),
-		MessageSignatureData:    nil,
+		SupportedTestCaseMetaDataAsJson:  supportedTestCaseMetaDataMessage.GetSupportedTestCaseMetaDataAsJson(),
+		SupportedTestSuiteMetaDataAsJson: supportedTestCaseMetaDataMessage.GetSupportedTestSuiteMetaDataAsJson(),
+		MessageSignatureData:             nil,
 	}
 
 	// Create signature message
@@ -73,7 +74,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	var succeededToSend bool
 	var responseMessage string
 	succeededToSend, responseMessage = fenixGuiBuilderObject.
-		SendConnectorPublishSupportedTestCaseMetaDataToFenixGuiBuilderServer(
+		SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer(
 			supportedTestCaseMetaDataMessageMessageToBuilderServer)
 
 	// Create Error Codes

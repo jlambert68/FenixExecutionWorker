@@ -8,20 +8,20 @@ import (
 	"time"
 )
 
-// SendConnectorPublishSupportedTestCaseMetaDataToFenixGuiBuilderServer
+// SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer
 // Connector send Supported TestCaseMetaData to GuiBuilderServer
-func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendConnectorPublishSupportedTestCaseMetaDataToFenixGuiBuilderServer(
+func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer(
 	supportedTestCaseMetaData *fenixTestCaseBuilderServerGrpcApi.
 		SupportedTestCaseMetaData) (bool, string) {
 
 	fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 		"id": "f3192329-b4a2-4ecf-bda3-d16386cadbc1",
 		//"supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersMessage": supportedTestInstructionsAndTestInstructionContainersAndAllowedUsersMessage,
-	}).Debug("Incoming 'SendConnectorPublishSupportedTestCaseMetaDataToFenixGuiBuilderServer'")
+	}).Debug("Incoming 'SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer'")
 
 	defer fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 		"id": "0d90b530-a3a3-4892-9499-49edc42a240e",
-	}).Debug("Outgoing 'SendConnectorPublishSupportedTestCaseMetaDataToFenixGuiBuilderServer'")
+	}).Debug("Outgoing 'SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer'")
 
 	var ctx context.Context
 	var returnMessageAckNack bool
@@ -70,7 +70,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendCo
 		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 			"ID":    "64cc1219-d237-42e3-a2b7-d09aa2e4b7ea",
 			"error": err,
-		}).Error("Problem to do gRPC-call to FenixGuiBuilderServer for 'SendConnectorPublishSupportedTestCaseMetaDataToFenixGuiBuilderServer'")
+		}).Error("Problem to do gRPC-call to FenixGuiBuilderServer for 'SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer'")
 
 		// Set that a new connection needs to be done next time
 		fenixExecutionWorkerObject.connectionToGuiBuilderServerInitiated = false
@@ -82,7 +82,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendCo
 		fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 			"ID":                                 "9287098f-192c-4907-9783-de4c9538366d",
 			"Message from FenixGuiBuilderServer": returnMessage.Comments,
-		}).Error("Problem to do gRPC-call to FenixGuiBuilderServer for 'SendConnectorPublishSupportedTestCaseMetaDataToFenixGuiBuilderServer'")
+		}).Error("Problem to do gRPC-call to FenixGuiBuilderServer for 'SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer'")
 
 		return false, returnMessage.Comments
 	}
