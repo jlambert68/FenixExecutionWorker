@@ -14,7 +14,7 @@ import (
 // Connector publish supported TestCaseMetaData to Worker
 func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSupportedMetaData(
 	ctx context.Context,
-	supportedTestCaseMetaDataMessage *fenixExecutionWorkerGrpcApi.SupportedTestCaseMetaData) (
+	supportedMetaDataMessage *fenixExecutionWorkerGrpcApi.SupportedTestCaseAndTestSuiteMetaData) (
 	returnMessage *fenixExecutionWorkerGrpcApi.AckNackResponse,
 	err error) {
 
@@ -34,7 +34,7 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	returnMessage = common_config.IsCallerUsingCorrectWorkerProtoFileVersion(
 		userId,
 		fenixExecutionWorkerGrpcApi.CurrentFenixExecutionWorkerProtoFileVersionEnum(
-			supportedTestCaseMetaDataMessage.ClientSystemIdentification.ProtoFileVersionUsedByClient))
+			supportedMetaDataMessage.ClientSystemIdentification.ProtoFileVersionUsedByClient))
 	if returnMessage != nil {
 
 		return returnMessage, nil
@@ -45,37 +45,37 @@ func (s *fenixExecutionWorkerConnectorGrpcServicesServer) ConnectorPublishSuppor
 	fenixGuiBuilderObject = &messagesToGuiBuilderServer.MessagesToGuiBuilderServerObjectStruct{Logger: s.logger}
 
 	// Create gRPC-message towards GuiBuilderServer for 'SupportedTestCaseMetaDataMessage'
-	var supportedTestCaseMetaDataMessageMessageToBuilderServer *fenixTestCaseBuilderServerGrpcApi.
-		SupportedTestCaseMetaData
-	supportedTestCaseMetaDataMessageMessageToBuilderServer = &fenixTestCaseBuilderServerGrpcApi.
-		SupportedTestCaseMetaData{
+	var supportedMetaDataMessageMessageToBuilderServer *fenixTestCaseBuilderServerGrpcApi.
+		SupportedTestCaseAndTestSuiteMetaData
+	supportedMetaDataMessageMessageToBuilderServer = &fenixTestCaseBuilderServerGrpcApi.
+		SupportedTestCaseAndTestSuiteMetaData{
 		ClientSystemIdentification: &fenixTestCaseBuilderServerGrpcApi.ClientSystemIdentificationMessage{
-			DomainUuid: supportedTestCaseMetaDataMessage.GetClientSystemIdentification().
+			DomainUuid: supportedMetaDataMessage.GetClientSystemIdentification().
 				GetDomainUuid(),
 			ProtoFileVersionUsedByClient: fenixTestCaseBuilderServerGrpcApi.
 				CurrentFenixTestCaseBuilderProtoFileVersionEnum(common_config.GetHighestBuilderServerProtoFileVersion()),
 		},
-		SupportedTestCaseMetaDataAsJson:  supportedTestCaseMetaDataMessage.GetSupportedTestCaseMetaDataAsJson(),
-		SupportedTestSuiteMetaDataAsJson: supportedTestCaseMetaDataMessage.GetSupportedTestSuiteMetaDataAsJson(),
+		SupportedTestCaseMetaDataAsJson:  supportedMetaDataMessage.GetSupportedTestCaseMetaDataAsJson(),
+		SupportedTestSuiteMetaDataAsJson: supportedMetaDataMessage.GetSupportedTestSuiteMetaDataAsJson(),
 		MessageSignatureData:             nil,
 	}
 
 	// Create signature message
 	var messageSignatureData *fenixTestCaseBuilderServerGrpcApi.MessageSignatureDataMessage
 	messageSignatureData = &fenixTestCaseBuilderServerGrpcApi.MessageSignatureDataMessage{
-		HashToBeSigned: supportedTestCaseMetaDataMessage.GetMessageSignatureData().GetHashToBeSigned(),
-		Signature:      supportedTestCaseMetaDataMessage.GetMessageSignatureData().GetSignature(),
+		HashToBeSigned: supportedMetaDataMessage.GetMessageSignatureData().GetHashToBeSigned(),
+		Signature:      supportedMetaDataMessage.GetMessageSignatureData().GetSignature(),
 	}
 
 	// Save the Signature data in message to TestCaseBuilderServer
-	supportedTestCaseMetaDataMessageMessageToBuilderServer.MessageSignatureData = messageSignatureData
+	supportedMetaDataMessageMessageToBuilderServer.MessageSignatureData = messageSignatureData
 
 	// Publish Supported template repository connection parameters to TestCaseBuilderServer
 	var succeededToSend bool
 	var responseMessage string
 	succeededToSend, responseMessage = fenixGuiBuilderObject.
 		SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer(
-			supportedTestCaseMetaDataMessageMessageToBuilderServer)
+			supportedMetaDataMessageMessageToBuilderServer)
 
 	// Create Error Codes
 	var errorCodes []fenixExecutionWorkerGrpcApi.ErrorCodesEnum

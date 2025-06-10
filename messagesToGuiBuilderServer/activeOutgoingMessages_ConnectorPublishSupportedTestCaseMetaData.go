@@ -11,8 +11,7 @@ import (
 // SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer
 // Connector send Supported TestCaseMetaData to GuiBuilderServer
 func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendConnectorPublishSupportedMetaDataToFenixGuiBuilderServer(
-	supportedTestCaseMetaData *fenixTestCaseBuilderServerGrpcApi.
-		SupportedTestCaseMetaData) (bool, string) {
+	supportedTestCaseAndTestSuiteMetaData *fenixTestCaseBuilderServerGrpcApi.SupportedTestCaseAndTestSuiteMetaData) (bool, string) {
 
 	fenixExecutionWorkerObject.Logger.WithFields(logrus.Fields{
 		"id": "f3192329-b4a2-4ecf-bda3-d16386cadbc1",
@@ -63,7 +62,7 @@ func (fenixExecutionWorkerObject *MessagesToGuiBuilderServerObjectStruct) SendCo
 	// Do gRPC-call
 	returnMessage, err := tempFenixGuiBuilderServerGrpcClient.ConnectorPublishSupportedMetaData(
 		ctx,
-		supportedTestCaseMetaData)
+		supportedTestCaseAndTestSuiteMetaData)
 
 	// Shouldn't happen
 	if err != nil {
